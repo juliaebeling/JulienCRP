@@ -20,6 +20,10 @@ private:
 	double g2 = 0.24;	//weight for exp-function in Radius
 
 public:
+
+	Nakanshi03(){
+	}
+
 	double getDensity(const Vector3d &position) const {
 		
 		double z = position.z/kpc;

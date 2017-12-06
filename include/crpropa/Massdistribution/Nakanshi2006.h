@@ -22,6 +22,10 @@ private:
 	double g3 = 10.8;	//weight of schaleheight exp-fkt
 	double zH = 1.06e-3;	//standart scaleheight
 public:
+	
+	Nakanshi06() {
+	}
+
 	double getPlaneDensity(const vector3d &position) const {
 
 	double R = sqrt(pow(position.x,2)+pow(position.y,2))/kpc;
