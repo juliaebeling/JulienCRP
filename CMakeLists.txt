@@ -395,6 +395,7 @@ add_library(crpropa SHARED
 	src/Massdistribution/Nakanshi.cpp
 	src/Massdistribution/Massdistribution.cpp
 	src/Massdistribution/Ferrie07.cpp
+	src/Massdistribution/Cordes.cpp
 	${CRPROPA_EXTRA_SOURCES}
 )
 target_link_libraries(crpropa ${CRPROPA_EXTRA_LIBRARIES})
