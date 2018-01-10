@@ -35,19 +35,34 @@ void ModuleList::add(Module *module) {
 	modules.push_back(module);
 }
 
-void ModuleList::process(Candidate *candidate) const {
+void ModuleList::remove(std::size_t i) {
+	iterator module_i = modules.begin();
+	std::advance(module_i, i);
+	modules.erase(module_i);
+}
+
+std::size_t ModuleList::size() const {
+        return modules.size();
+}
+
+ref_ptr<Module> ModuleList::operator[](const std::size_t i) {
+	iterator module_i = modules.begin();
+	std::advance(module_i, i);
+	return *module_i;
+}
+
+
+void ModuleList::process(Candidate* candidate) const {
 	module_list_t::const_iterator m;
 	for (m = modules.begin(); m != modules.end(); m++)
 		(*m)->process(candidate);
 }
 
 void ModuleList::process(ref_ptr<Candidate> candidate) const {
-	module_list_t::const_iterator m;
-	for (m = modules.begin(); m != modules.end(); m++)
-		(*m)->process(candidate);
+	process((Candidate*) candidate);
 }
 
-void ModuleList::run(Candidate *candidate, bool recursive, bool secondariesFirst) {
+void ModuleList::run(Candidate* candidate, bool recursive, bool secondariesFirst) {
 	// propagate primary candidate until finished
 	while (candidate->isActive() && !g_cancel_signal_flag) {
 		process(candidate);
@@ -70,6 +85,10 @@ void ModuleList::run(Candidate *candidate, bool recursive, bool secondariesFirst
 			run(candidate->secondaries[i], recursive, secondariesFirst);
 		}
 	}
+}
+
+void ModuleList::run(ref_ptr<Candidate> candidate, bool recursive, bool secondariesFirst) {
+	run((Candidate*) candidate, recursive, secondariesFirst);
 }
 
 void ModuleList::run(candidate_vector_t &candidates, bool recursive, bool secondariesFirst) {
@@ -161,12 +180,20 @@ void ModuleList::run(SourceInterface *source, size_t count, bool recursive, bool
 	::signal(SIGINT, old_signal_handler);
 }
 
-ModuleList::module_list_t &ModuleList::getModules() {
-	return modules;
+ModuleList::iterator ModuleList::begin() {
+	return modules.begin();
 }
 
-const ModuleList::module_list_t &ModuleList::getModules() const {
-	return modules;
+ModuleList::const_iterator ModuleList::begin() const {
+	return modules.begin();
+}
+
+ModuleList::iterator ModuleList::end() {
+	return modules.end();
+}
+
+ModuleList::const_iterator ModuleList::end() const {
+	return modules.end();
 }
 
 std::string ModuleList::getDescription() const {

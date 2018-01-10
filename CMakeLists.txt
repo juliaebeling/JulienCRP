@@ -92,7 +92,7 @@ if(ENABLE_COVERAGE)
 				COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info VERBATIM
 
 				# clean external libs
-				COMMAND ${LCOV_PATH} --remove coverage.info "/usr/include/*" "/usr/lib/*" "*/libs/gtest/*" "*/libs/eigen3/*" "*/libs/zstream-cpp/*" "*/libs/pugixml/*" "*/build/*" -o coverage.info.cleaned VERBATIM
+				COMMAND ${LCOV_PATH} --remove coverage.info "/usr/include/*" "/usr/lib/*" "*/libs/gtest/*" "*/libs/eigen3/*" "*/libs/zstream-cpp/*" "*/build/*" -o coverage.info.cleaned VERBATIM
 
 				# Generate html output
 				COMMAND ${GENHTML_PATH} -o coverageReport coverage.info.cleaned VERBATIM
@@ -108,23 +108,12 @@ if(ENABLE_COVERAGE)
 			message(WARNING "genhtml not found, coverage report generation not possible!")
 		endif(NOT GENHTML_PATH)
 	endif(LCOV_PATH AND GENHTML_PATH)
-
-
-
 endif(ENABLE_COVERAGE)
-
-list(APPEND CRPROPA_EXTRA_INCLUDES libs/pugixml)
-
 
 # kiss (provided)
 add_subdirectory(libs/kiss)
 list(APPEND CRPROPA_EXTRA_LIBRARIES kiss)
 list(APPEND CRPROPA_EXTRA_INCLUDES libs/kiss/include)
-
-# pugixml (provided)
-add_subdirectory(libs/pugixml)
-list(APPEND CRPROPA_EXTRA_LIBRARIES pugixml)
-list(APPEND CRPROPA_EXTRA_INCLUDES libs/pugixml)
 
 # HepID (provided)
 add_subdirectory(libs/HepPID)
@@ -311,34 +300,33 @@ endif()
 # ----------------------------------------------------------------------------
 # Download data files (interaction data, masses, decay data ...)
 # ----------------------------------------------------------------------------
-message("-- Downloading data file from crpropa.desy.de ~ 50 MB")
-file(DOWNLOAD
-	https://www.desy.de/~crpropa/data/data.tar.gz-CHECKSUM
-	${CMAKE_BINARY_DIR}/data.tar.gz-CHECKSUM)
-file(STRINGS ${CMAKE_BINARY_DIR}/data.tar.gz-CHECKSUM DATA_CHECKSUM LIMIT_COUNT 1 LENGTH_MINIMUM 32 LENGTH_MAXIMUM 32)
-file(WRITE ${CMAKE_BINARY_DIR}/data.tar.gz-CHECKSUM2 ${DATA_CHECKSUM})
-file(DOWNLOAD
-	https://www.desy.de/~crpropa/data/data.tar.gz
-	${CMAKE_BINARY_DIR}/data.tar.gz
-	EXPECTED_MD5 "${DATA_CHECKSUM}")
-message("-- Extracting data file")
-execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/data.tar.gz WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+OPTION(DOWNLOAD_DATA "Download CRProap Data files" ON)
+if(DOWNLOAD_DATA)
+	message("-- Downloading data file from crpropa.desy.de ~ 50 MB")
+	file(DOWNLOAD
+		https://www.desy.de/~crpropa/data/interaction_data/data.tar.gz-CHECKSUM
+		${CMAKE_BINARY_DIR}/data.tar.gz-CHECKSUM)
+	file(STRINGS ${CMAKE_BINARY_DIR}/data.tar.gz-CHECKSUM DATA_CHECKSUM LIMIT_COUNT 1 LENGTH_MINIMUM 32 LENGTH_MAXIMUM 32)
+	file(DOWNLOAD
+		https://www.desy.de/~crpropa/data/interaction_data/data.tar.gz
+		${CMAKE_BINARY_DIR}/data.tar.gz
+		EXPECTED_MD5 "${DATA_CHECKSUM}")
+	message("-- Extracting data file")
+else()
+	message("-- Downloading of data file disabled")
+endif(DOWNLOAD_DATA)
+if(EXISTS ${CMAKE_BINARY_DIR}/data.tar.gz)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/data.tar.gz WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+else()
+	message(WARNING "CRPropa data file not found at ${CMAKE_BINARY_DIR}/data.tar.gz 
+CRPropa should compile, but will likely not work properly! Please install data file manually, or use the automatic download which is enabled by default.")
+endif()
+
 # ----------------------------------------------------------------------------
 # Library and Binary
 # ----------------------------------------------------------------------------
 file(GLOB_RECURSE CRPROPA_INCLUDES RELATIVE ${CMAKE_SOURCE_DIR} include/*.h)
 include_directories(include ${CRPROPA_EXTRA_INCLUDES})
-
-# Creates a meta-header file for easy inclusion in 3rd party C++ projects
-file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/include/crpropa/CRPropa.h)
-foreach(filename ${CRPROPA_INCLUDES})
-	# skip magneticLens due to additional requirements which are not available as compiled libraries later
-    if(NOT filename MATCHES "(.*)/magneticLens/(.*)")
-	    string(REPLACE "include/" "" filename ${filename})
-    	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/include/crpropa/CRPropa.h "#include \"${filename}\"\n")
-	endif()
-endforeach(filename)
-include_directories(include ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 add_library(crpropa SHARED
 	src/Candidate.cpp
@@ -358,7 +346,6 @@ add_library(crpropa SHARED
 	src/Random.cpp
 	src/Source.cpp
 	src/Variant.cpp
-	src/XmlExecute.cpp
 	src/module/Boundary.cpp
 	src/module/BreakCondition.cpp
 	src/module/DiffusionSDE.cpp
@@ -386,23 +373,22 @@ add_library(crpropa SHARED
 	src/module/SimplePropagation.cpp
 	src/module/SynchrotronRadiation.cpp
 	src/module/TextOutput.cpp
+	src/module/AdiabaticCooling.cpp
 	src/module/Tools.cpp
 	src/magneticField/JF12Field.cpp
 	src/magneticField/MagneticField.cpp
 	src/magneticField/MagneticFieldGrid.cpp
 	src/magneticField/PshirkovField.cpp
-
 	src/Massdistribution/Nakanshi.cpp
 	src/Massdistribution/Massdistribution.cpp
 	src/Massdistribution/Ferrie07.cpp
 	src/Massdistribution/Cordes.cpp
 	src/Massdistribution/Pohl2008.cpp
+	src/magneticField/ArchimedeanSpiralField.cpp
+	src/advectionField/AdvectionField.cpp
 	${CRPROPA_EXTRA_SOURCES}
 )
 target_link_libraries(crpropa ${CRPROPA_EXTRA_LIBRARIES})
-
-add_executable(crpropa-xmlrun src/main.cpp)
-target_link_libraries(crpropa-xmlrun crpropa)
 
 # ----------------------------------------------------------------------------
 # Python
@@ -469,7 +455,6 @@ endif(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
 # Install
 # ----------------------------------------------------------------------------
 add_definitions(-DCRPROPA_INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
-install(TARGETS crpropa-xmlrun RUNTIME DESTINATION bin)
 install(TARGETS crpropa DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
@@ -498,6 +483,10 @@ if(ENABLE_TESTING)
 	target_link_libraries(testMagneticField crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
 	add_test(testMagneticField testMagneticField)
 
+	add_executable(testAdvectionField test/testAdvectionField.cpp)
+	target_link_libraries(testAdvectionField crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
+	add_test(testAdvectionField testAdvectionField)
+
 	add_executable(testDINT test/testDINT.cpp)
 	target_link_libraries(testDINT crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
 	add_test(testDINT testDINT)
@@ -522,10 +511,16 @@ if(ENABLE_TESTING)
 	target_link_libraries(testOutput crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
 	add_test(testOutput testOutput)
 
+
 	CONFIGURE_FILE(test/testFunctionalGroups.cpp.in testFunctionalGroups.cpp)
 	add_executable(testFunctionalGroups testFunctionalGroups.cpp)
 	target_link_libraries(testFunctionalGroups crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
 	add_test(testFunctionalGroups testFunctionalGroups)
+
+	add_executable(testAdiabaticCooling test/testAdiabaticCooling.cpp)
+	target_link_libraries(testAdiabaticCooling crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
+	add_test(testAdiabaticCooling testAdiabaticCooling)
+
 
 	if(WITH_GALACTIC_LENSES)
 		add_executable(testGalacticMagneticLens test/testMagneticLens.cpp)
@@ -549,21 +544,5 @@ if(ENABLE_TESTING)
 		CONFIGURE_FILE(test/testPythonExtension.py.in testPythonExtension.py)
 		add_test(testPythonExtension ${PYTHON_EXECUTABLE} testPythonExtension.py)
 	endif(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
-
-	# XML tests (CRPropa2 compatibility)
-	set(XML_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/crpropa-xmlrun)
-	add_test(testXML1D_discreteSource ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test1D_discreteSource.xml)
-	add_test(testXML1D ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test1D.xml)
-	add_test(testXML3D_continuousHomogeneousSources ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test3D_continuousHomogeneousSources.xml)
-	add_test(testXML3D_discreteHomogeneousSources ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test3D_discreteHomogeneousSources.xml)
-	if(FFTW3F_FOUND)
-		add_test(testXML3D_kolmogorovBfield ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test3D_kolmogorovBfield.xml)
-	endif(FFTW3F_FOUND)
-	add_test(testXML3D_noBfield ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test3D_noBfield.xml)
-	add_test(testXML3D_uniformBfield ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/test3D_uniformBfield.xml)
-	add_test(testXMLCRPropa2EventOutput1D ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/testCRPropa2EventOutput1D.xml)
-	add_test(testXMLCRPropa2EventOutput3D ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/testCRPropa2EventOutput3D.xml)
-	add_test(testXMLCRPropa2TrajectoryOutput1D ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/testCRPropa2TrajectoryOutput1D.xml)
-	add_test(testXMLCRPropa2TrajectoryOutput3D ${XML_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/xml/testCRPropa2TrajectoryOutput3D.xml)
 
 endif(ENABLE_TESTING)

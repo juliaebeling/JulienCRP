@@ -16,11 +16,6 @@
 /* 2: SWIG and CRPropa headers */
 %include "2_headers.i"
 
-%include "crpropa/Version.h"
-%pythoncode %{
-    __version__ = g_GIT_DESC
-%}
-
 /* 3. Pretty print for Python */
 
 %define __REPR__( classname )
@@ -72,11 +67,6 @@
 %template(Vector3f) crpropa::Vector3<float>;
 
 %enddef
-
-%pythoncode %{
-class ParticleCollector(ParticleCollector):
-        __getitem__ = ParticleCollector.__getitem__
-%}
 
 /* Division of vector fix #34 */
 %feature("python:slot", "nb_divide", functype="binaryfunc") *::operator/;

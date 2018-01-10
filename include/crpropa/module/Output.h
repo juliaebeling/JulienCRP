@@ -8,7 +8,6 @@
 #include <vector>
 #include <string>
 
-
 namespace crpropa {
 
 /**
@@ -36,6 +35,7 @@ protected:
 public:
 	enum OutputColumn {
 		TrajectoryLengthColumn,
+		ColumnDensityColumn,
 		RedshiftColumn,
 		CurrentIdColumn,
 		CurrentEnergyColumn,
@@ -52,7 +52,6 @@ public:
 		SerialNumberColumn,
 		WeightColumn
 	};
-
 	enum OutputType {
 		Trajectory1D,
 		Trajectory3D,
@@ -61,6 +60,9 @@ public:
 		Everything
 	};
 
+	std::string OutputTypeName(OutputType outputtype);
+	const std::string outputName;
+	
 	Output();
 	Output(OutputType outputtype);
 
@@ -77,7 +79,7 @@ public:
 	void enableAll();
 	void disableAll();
 	void set1D(bool value);
-	size_t getCount() const;
+	size_t size() const;
 
 	void process(Candidate *) const;
 };

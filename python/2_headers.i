@@ -1,18 +1,16 @@
-/* 2: SWIG and CRPropa headers */
+/* 2: CRPropa headers and Python extensions */
 
-%include "stl.i"
-%include "std_set.i"
-%include "std_multiset.i"
-%include "std_map.i"
-%include "std_pair.i"
-%include "std_multimap.i"
-%include "std_vector.i"
-%include "std_string.i"
-%include "std_list.i"
-%include "stdint.i"
-%include "std_container.i"
-%include "exception.i"
-%include "std_iostream.i"
+/* Python slots */
+%feature("python:slot", "sq_length", functype="lenfunc") __len__;
+%feature("python:slot", "mp_subscript", functype="binaryfunc") __getitem__;
+%feature("python:slot", "tp_iter", functype="unaryfunc") __iter__;
+#ifdef SWIG_PYTHON3
+%feature("python:slot", "tp_iternext", functype="iternextfunc") __next__;
+#else
+%feature("python:slot", "tp_iternext", functype="iternextfunc") next;
+#endif
+
+/* Include headers */
 
 #ifdef CRPROPA_HAVE_QUIMBY
 %import (module="quimby") "quimby/Referenced.h"
@@ -24,7 +22,6 @@
 #ifdef CRPROPA_HAVE_SAGA
 %import (module="saga") saga.i
 #endif
-
 
 %{
 #include "CRPropa.h"
@@ -48,6 +45,7 @@
 %ignore operator crpropa::Observer*;
 %ignore operator crpropa::ObserverFeature*;
 %ignore operator crpropa::MagneticField*;
+%ignore operator crpropa::AdvectionField*;
 %ignore operator crpropa::ParticleCollector*;
 %ignore crpropa::TextOutput::load;
 
@@ -56,7 +54,6 @@
 
 
 %include "crpropa/Logging.h"
-
 %include "crpropa/Vector3.h"
 %include "crpropa/Referenced.h"
 %include "crpropa/Units.h"
@@ -68,6 +65,7 @@
 %include "crpropa/ParticleState.h"
 %include "crpropa/ParticleID.h"
 %include "crpropa/ParticleMass.h"
+%include "crpropa/Version.h"
 
 %import "crpropa/Variant.h"
 
@@ -280,6 +278,10 @@
 %template(MagneticFieldRefPtr) crpropa::ref_ptr<crpropa::MagneticField>;
 %include "crpropa/magneticField/MagneticField.h"
 
+%implicitconv crpropa::ref_ptr<crpropa::AdvectionField>;
+%template(AdvectionFieldRefPtr) crpropa::ref_ptr<crpropa::AdvectionField>;
+%include "crpropa/advectionField/AdvectionField.h"
+
 %include "crpropa/Grid.h"
 %include "crpropa/GridTools.h"
 
@@ -303,6 +305,7 @@
 %include "crpropa/magneticField/AMRMagneticField.h"
 %include "crpropa/magneticField/JF12Field.h"
 %include "crpropa/magneticField/PshirkovField.h"
+%include "crpropa/magneticField/ArchimedeanSpiralField.h"
 %include "crpropa/module/BreakCondition.h"
 %include "crpropa/module/Boundary.h"
 
@@ -387,13 +390,7 @@
 %include "crpropa/module/Output.h"
 %include "crpropa/module/DiffusionSDE.h"
 %include "crpropa/module/TextOutput.h"
-%inline %{
-class RangeError {};
-%}
 
-%template(ParticleCollectorRefPtr) crpropa::ref_ptr<crpropa::ParticleCollector>;
-
-%include "crpropa/module/ParticleCollector.h"
 %include "crpropa/module/HDF5Output.h"
 %include "crpropa/module/OutputShell.h"
 %include "crpropa/module/OutputROOT.h"
@@ -412,6 +409,7 @@ class RangeError {};
 %include "crpropa/module/EMTripletPairProduction.h"
 %include "crpropa/module/EMInverseComptonScattering.h"
 %include "crpropa/module/SynchrotronRadiation.h"
+%include "crpropa/module/AdiabaticCooling.h"
 
 %template(IntSet) std::set<int>;
 %include "crpropa/module/Tools.h"
@@ -422,26 +420,115 @@ class RangeError {};
 %feature("director") crpropa::SourceFeature;
 %include "crpropa/Source.h"
 
-%template(ModuleListRefPtr) crpropa::ref_ptr<crpropa::ModuleList>;
-%include "crpropa/ModuleList.h"
+%inline %{
+class ModuleListIterator {
+  public:
+        ModuleListIterator(
+                crpropa::ModuleList::iterator _cur,
+                crpropa::ModuleList::iterator _end) : 
+                        cur(_cur), end(_end) {}
+        ModuleListIterator* __iter__() { return this; }
+        crpropa::ModuleList::iterator cur;
+        crpropa::ModuleList::iterator end;
+  };
+%}
 
-%exception crpropa::ParticleCollector::__getitem__ {
-  try {
-        $action
+%extend ModuleListIterator {
+#ifdef SWIG_PYTHON3
+  crpropa::ref_ptr<crpropa::Module>& __next__() {
+#else
+  crpropa::ref_ptr<crpropa::Module>& next() {
+#endif
+    if ($self->cur != $self->end) {
+        return *$self->cur++;
+    }
+    throw StopIterator();
   }
-  catch (RangeError) {
-        SWIG_exception(SWIG_IndexError, "Index out of bounds");
-        return NULL;
-  }
-
 }
 
-%extend crpropa::ParticleCollector {
-  crpropa::ref_ptr<crpropa::Candidate> __getitem__(size_t i) {
-        if (i >= $self->getCount()) {
+%extend crpropa::ModuleList {
+  ModuleListIterator __iter__() {
+        return ModuleListIterator($self->begin(), $self->end()); 
+  }
+  crpropa::ref_ptr<crpropa::Module> __getitem__(size_t i) {
+        if (i >= $self->size()) {
                 throw RangeError();
         }
         return (*($self))[i];
   }
+  size_t __len__() {
+        return $self->size();
+  }
 };
 
+%template(ModuleListRefPtr) crpropa::ref_ptr<crpropa::ModuleList>;
+%include "crpropa/ModuleList.h"
+
+%template(ParticleCollectorRefPtr) crpropa::ref_ptr<crpropa::ParticleCollector>;
+
+%inline %{
+class ParticleCollectorIterator {
+  public:
+        ParticleCollectorIterator(
+                crpropa::ParticleCollector::iterator _cur,
+                crpropa::ParticleCollector::iterator _end) : 
+                        cur(_cur), end(_end) {}
+        ParticleCollectorIterator* __iter__() { return this; }
+        crpropa::ParticleCollector::iterator cur;
+        crpropa::ParticleCollector::iterator end;
+  };
+%}
+
+%extend ParticleCollectorIterator {
+#ifdef SWIG_PYTHON3
+  crpropa::ref_ptr<crpropa::Candidate>& __next__() {
+#else
+  crpropa::ref_ptr<crpropa::Candidate>& next() {
+#endif
+    if ($self->cur != $self->end) {
+        return *$self->cur++;
+    }
+    throw StopIterator();
+  }
+}
+
+%extend crpropa::ParticleCollector {
+  ParticleCollectorIterator __iter__() {
+        return ParticleCollectorIterator($self->begin(), $self->end()); 
+  }
+  crpropa::ref_ptr<crpropa::Candidate> __getitem__(size_t i) {
+        if (i >= $self->size()) {
+                throw RangeError();
+        }
+        return (*($self))[i];
+  }
+  std::vector< crpropa::ref_ptr<crpropa::Candidate> > __getitem__(PyObject *param) {
+        std::vector< crpropa::ref_ptr<crpropa::Candidate> > result;
+
+        if (PySlice_Check(param)) {
+                Py_ssize_t len = 0, start = 0, stop = 0, step = 0, slicelength = 0, i = 0;
+                len = $self->size();
+
+                #ifdef SWIG_PYTHON3
+                    PySlice_GetIndicesEx(param, len, &start, &stop, &step, &slicelength);
+                #else
+                    PySlice_GetIndicesEx((PySliceObject*)param, len, &start, &stop, &step, &slicelength);
+                #endif
+                
+                for(crpropa::ParticleCollector::iterator itr = $self->begin(); itr != $self->end(); ++itr){
+                        if( i >= start && i < stop){
+                                result.push_back(itr->get());
+                        }
+                        ++i;
+                }
+                return result;
+        } else {
+                throw RangeError();
+        }        
+  }
+  size_t __len__() {
+        return $self->size();
+  }
+};
+
+%include "crpropa/module/ParticleCollector.h"
