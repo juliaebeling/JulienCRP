@@ -2,26 +2,22 @@
 
 namespace crpropa {
 
-Pohl08::Pohl08(bool reducedGrid) {
-	this.useReducedGrid = reducedGrid;
-	loadPohlGrid();
-}
 
 void Pohl08::loadPohlGrid() {
 	if(useReducedGrid)
 	{
-		Grid = new ScalarGrid(vector3d(-14950*pc,-14950*pc,-487.5*pc), 300,300,10,100*pc); 
+		Grid = ScalarGrid(Vector3d(-14950*pc,-14950*pc,-487.5*pc), 300,300,10,100*pc); 
 		loadGrid(&Grid, "share/crpropa/Pohl_Reduced.txt", 2); //Conversion 2 for double Target in H2
 	}
 	else
 	{
-		Grid = new ScalarGrid(vector3d(-14950*pc,-14950*pc, -487.5*pc),300,300,40,100*pc);
+		Grid = ScalarGrid(Vector3d(-14950*pc,-14950*pc, -487.5*pc),300,300,40,100*pc);
 		loadGrid(&Grid, "share/crpropa/Pohl.txt",2); //conversion 2 for double Target in H2
 	}
 }
 
 
-double Pohl08::getDensity(const Vector3d &positon) const {
+double Pohl08::getDensity(const Vector3d &position) const {
 	return getH2Density(position);
 }
 
@@ -30,25 +26,25 @@ double Pohl08::getH2Density(const Vector3d &position) const {
 	Vector3d pos = position;
 	if(!useReducedGrid)
 	{	//transformation of Position for spacing of grid
-		pos.z *=4 	
+		pos.z *=4;
 	}
 	
-	return Grid.interpolate(&pos);
+	return Grid.interpolate(pos);
 }
 
 bool Pohl08::getisforHI() {
-	return false;
+	return isforHI;
 }
 
 bool Pohl08::getisforHII() {
-	return false;
+	return isforHII;
 }
 
 bool Pohl08::getisforH2() {
-	return true;
+	return isforH2;
 }
 
-bool getuseReducedGrid() {
+bool Pohl08::getuseReducedGrid() {
 	return useReducedGrid;
 }
 

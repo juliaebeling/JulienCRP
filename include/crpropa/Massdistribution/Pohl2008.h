@@ -23,10 +23,10 @@ class Pohl08: public Density {
 	bool isforHI = false;
 	bool isforHII = false;
 	bool isforH2 = true; 
-	bool useReducedGrid;	// use every 4th value of Pohls Grid -> equal spacing in all axis 
+	bool useReducedGrid=true;	// use every 4th value of Pohls Grid -> equal spacing in all axis 
 
 public:
-	Pohl08(bool reducedGrid);
+	Pohl08();
 	void loadPohlGrid();
 	double getDensity(const Vector3d &position) const;
 	double getH2Density(const Vector3d &position) const;
@@ -39,7 +39,7 @@ public:
 	void setuseReducedGrid(bool reduced);
 	
 	
-}
+};
 
 
 } //namespace crpropa
