@@ -16,7 +16,7 @@ bool isforHII;
 bool isforH2;
  public:
   virtual ~Density() {
-  };
+  }
   virtual double getDensity(const Vector3d &position) const {
     return 0;
   };
@@ -32,6 +32,7 @@ bool isforH2;
 	virtual double getH2Density(const Vector3d &position) const {
 		return 0;
 	};
+	
 	bool getisforHI(){
 		return isforHI;
 	};

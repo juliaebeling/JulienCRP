@@ -6,7 +6,7 @@ namespace crpropa {
 
 double Massdistribution::getDensity(const Vector3d &position) const{
 	
-	double n=0;
+	double n=0.;
 	if(isforHI){
 		n += distributionList[0]->getHIDensity(position);
 	}

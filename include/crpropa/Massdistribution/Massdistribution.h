@@ -21,7 +21,6 @@ bool isforH2=false;
 public:
 	double getDensity(const Vector3d &position) const;
 	void add(Density &density);	
-	std::string getDiscription();
 
 };
 	
