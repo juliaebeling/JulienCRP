@@ -2,13 +2,11 @@
 
 namespace crpropa {
 
-double Cordes::getDensity(const Vector3d &position) const {
 
-	return getHIIDensity(position);
-}
 
 double Cordes::getHIIDensity(const Vector3d &position) const {
-
+	
+	
 	double n=0;
 	
 	double x=position.x/kpc;
@@ -23,7 +21,22 @@ double Cordes::getHIIDensity(const Vector3d &position) const {
 	return n;
 }
 
+double Cordes::getDensity(const Vector3d &position) const {
 
+	return Cordes::getHIIDensity(position);
+}
+
+bool Cordes::getisforHI() {
+	return isforHI;
+}
+
+bool Cordes::getisforHII() {
+	return isforHII;
+}
+
+bool Cordes::getisforH2() {
+	return isforH2;
+}
 
 
 

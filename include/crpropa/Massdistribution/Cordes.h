@@ -23,7 +23,6 @@ private:
 
 public:
 
-	Cordes();
 	double getDensity(const Vector3d &position) const;
 	double getHIIDensity(const Vector3d &position) const;
 	

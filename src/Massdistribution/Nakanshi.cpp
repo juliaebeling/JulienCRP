@@ -8,20 +8,7 @@ Nakanshi::Nakanshi(){
 	isforH2 = true;		//model typ: do not change!
 }
 
-double Nakanshi::getDensity(const Vector3d &position) {
-	double n = 0;
-	n += getHIDensity(position);
-	n += getH2Density(position);
-	return n;
-}
 
-double Nakanshi::getHIDensity(const Vector3d &position) {
-	
-	double z = position.z/kpc;
-	double planedensity = getHIPlanedensity(position);
-	double scaleheight = getHIScaleheight(position);
-	return planedensity*pow(0.5,pow(z/scaleheight,2));
-}
 
 double Nakanshi::getHIScaleheight(const Vector3d &position) {
 		
@@ -37,14 +24,7 @@ double Nakanshi::getHIPlanedensity(const Vector3d &position) {
 	return planedensity;
 	}
 
-double Nakanshi::getH2Density(const Vector3d &position) {
-	
-	double z = position.z/kpc;
-	double plane = getH2Planedensity(position);
-	double scaleheight = getH2Scaleheight(position);
-	return 2*plane*pow(0.5,pow(position.z,2));	//Factor 2 for both nuclei
-}
-	
+
 double Nakanshi::getH2Scaleheight(const Vector3d &position)  {
 
 	double R = sqrt(pow(position.x,2)+ pow(position.y,2));
@@ -59,26 +39,39 @@ double Nakanshi::getH2Planedensity(const Vector3d &position) {
 	return 0.94*Planedensity;
 }
 
-std::string Nakanshi::getDiscription() {
-	std::string Description="modell Nakanshi ";
-	if(isforHI)
-	{
-		Description += "2003 for HI";
-		if(isforH2)
-		{
-			Description += "and Nakanshi 2006 for H2";
-		}
-	return Description;
-	}
-	if(isforH2)
-	{
-		Description += "2006 for H2";
-	}
-	else
-	{
-		Description += "not in use";
-	}
-	return Description;
+double Nakanshi::getHIDensity(const Vector3d &position) {
+	
+	double z = position.z/kpc;
+	double planedensity = Nakanshi::getHIPlanedensity(position);
+	double scaleheight = Nakanshi::getHIScaleheight(position);
+	return planedensity*pow(0.5,pow(z/scaleheight,2));
+}
+
+double Nakanshi::getH2Density(const Vector3d &position) {
+	
+	double z = position.z/kpc;
+	double plane = Nakanshi::getH2Planedensity(position);
+	double scaleheight = Nakanshi::getH2Scaleheight(position);
+	return 2*plane*pow(0.5,pow(position.z,2));	//Factor 2 for both nuclei
+}
+	
+
+double Nakanshi::getDensity(const Vector3d &position) {
+	double n = 0;
+	n += Nakanshi::getHIDensity(position);
+	n += Nakanshi::getH2Density(position);
+	return n;
+}
+
+bool Nakanshi::getisforHI() {
+	return isforHI;
+}
+
+bool Nakanshi::getisforHII() {
+	return isforHII;
+}
+bool Nakanshi::getisforH2() {
+	return isforH2;
 }
 
 } //namespace crpropa

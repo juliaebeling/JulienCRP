@@ -64,9 +64,11 @@
 #include "crpropa/advectionField/AdvectionField.h"
 
 #include "crpropa/Massdistribution/Density.h"
-/*#include "crpropa/Massdistribution/Nakanshi.h"
-#include "crpropa/Massdistribution/Massdistribution.h"
+#include "crpropa/Massdistribution/Nakanshi.h"
 #include "crpropa/Massdistribution/Cordes.h"
+
+/*#include "crpropa/Massdistribution/Massdistribution.h"
+
 #include "crpropa/Massdistribution/Nakanshi.h"
 #include "crpropa/Massdistribution/Ferrie07.h"
 #include "crpropa/Massdistribution/NE2001.h"

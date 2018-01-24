@@ -40,7 +40,6 @@ public:
 	bool getisforHII();
 	bool getisforH2();
 	
-	std::string getDiscription();
 
 };
 
