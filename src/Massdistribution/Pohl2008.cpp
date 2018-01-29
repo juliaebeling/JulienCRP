@@ -17,9 +17,6 @@ void Pohl08::loadPohlGrid() {
 }
 
 
-double Pohl08::getDensity(const Vector3d &position) const {
-	return getH2Density(position);
-}
 
 double Pohl08::getH2Density(const Vector3d &position) const {
 	
@@ -31,6 +28,11 @@ double Pohl08::getH2Density(const Vector3d &position) const {
 	
 	return Grid.interpolate(pos);
 }
+
+double Pohl08::getDensity(const Vector3d &position) const {
+	return Pohl08::getH2Density(position);
+}
+
 
 bool Pohl08::getisforHI() {
 	return isforHI;
@@ -51,7 +53,7 @@ bool Pohl08::getuseReducedGrid() {
 void Pohl08::setuseReducedGrid(bool reduced) {
 
 	useReducedGrid = reduced;
-	loadPohlGrid();		//changing the dimension of Grid
+	Pohl08::loadPohlGrid();		//changing the dimension of Grid
 }			
 
 } //namespace

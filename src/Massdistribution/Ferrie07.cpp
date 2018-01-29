@@ -43,20 +43,6 @@ Vector3d Ferrie::DISKTrafo(const Vector3d &position) const {
 	
 	
 
-double Ferrie::getDensity(const Vector3d &position) const{ 
-
-	double n=0; 
-	if(isforHI){
-		n += getHIDensity(position);
-	}
-	if(isforHII){
-		n+=getHIIDensity(position);
-	}
-	if(isforH2){
-		n+=getH2Density(position);
-	}
-	return n;
-}
 
 double Ferrie::getHIDensity(const Vector3d &position) const {
 	
@@ -67,7 +53,7 @@ double Ferrie::getHIDensity(const Vector3d &position) const {
 	{
 		double nCMZ = 0;	//Center
 		
-		Vector3d pos = CMZTrafo(position);	//Koordinaten Trafo
+		Vector3d pos = Ferrie::CMZTrafo(position);	//Koordinaten Trafo
 		double x = pos.x;
 		double y = pos.y;
 		double z = pos.z;
@@ -77,7 +63,7 @@ double Ferrie::getHIDensity(const Vector3d &position) const {
 		
 		double nDisk = 0;		//Disk
 		
-		pos = DISKTrafo(position);	//Koordinaten Trafo
+		pos = Ferrie::DISKTrafo(position);	//Koordinaten Trafo
 		x = pos.x/pc;
 		y = pos.y/pc;
 		z = pos.z/pc;
@@ -181,7 +167,7 @@ double Ferrie::getH2Density(const Vector3d &position) const{
 		double nCMZ = 0;
 		double nDISK = 0;
 		
-		Vector3d pos = CMZTrafo(position);
+		Vector3d pos = Ferrie::CMZTrafo(position); //Koord Trafo
 		double x = pos.x/pc;
 		double y = pos.y/pc;
 		double z = pos.z/pc;
@@ -190,7 +176,7 @@ double Ferrie::getH2Density(const Vector3d &position) const{
 		nCMZ = exp(-pow((A-125)/137,4))*exp(-fabs(z)/18);
 		nCMZ *= 150;		//Density at Center for scale
 		
-		pos = DISKTrafo(position);
+		pos = Ferrie::DISKTrafo(position);
 		x=pos.x/pc;
 		y=pos.y/pc;
 		z=pos.z/pc;
@@ -211,6 +197,22 @@ double Ferrie::getH2Density(const Vector3d &position) const{
 	}
 	return n;
 }
+
+double Ferrie::getDensity(const Vector3d &position) const{ 
+
+	double n=0; 
+	if(isforHI){
+		n += Ferrie::getHIDensity(position);
+	}
+	if(isforHII){
+		n+=Ferrie::getHIIDensity(position);
+	}
+	if(isforH2){
+		n+=Ferrie::getH2Density(position);
+	}
+	return n;
+}
+
 
 void Ferrie::setisforHI(bool HI){
 

@@ -4,20 +4,7 @@
 namespace crpropa {
 	
 
-double Massdistribution::getDensity(const Vector3d &position) const{
-	
-	double n=0.;
-	if(isforHI){
-		n += distributionList[0]->getHIDensity(position);
-	}
-	if(isforHII){
-		n += distributionList[1]->getHIIDensity(position);
-	}
-	if(isforH2){
-		n += distributionList[2]->getH2Density(position);
-	}
-	return n;
-}
+
 
 void Massdistribution::add(Density &density) { //erase actual distribution and adds new 	
 	
@@ -45,7 +32,32 @@ void Massdistribution::add(Density &density) { //erase actual distribution and a
 }
 
 
+double Massdistribution::getDensity(const Vector3d &position) const{
 	
+	double n=0.;
+	if(isforHI){
+		n += distributionList[0]->getHIDensity(position);
+	}
+	if(isforHII){
+		n += distributionList[1]->getHIIDensity(position);
+	}
+	if(isforH2){
+		n += distributionList[2]->getH2Density(position);
+	}
+	return n;
+}
+/*
+bool Massdistribution::getisforHI() {
+	return isforHI;
+}
 
+bool Massdistribution::getisforHII() {
+	return isforHII;
+}
+
+bool Massdistribution::getisforH2() {
+	return isforH2;
+}
+*/
 } //namespace crpropa
 

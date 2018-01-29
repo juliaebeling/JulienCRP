@@ -17,7 +17,25 @@ class Density: public Referenced {
   virtual double getDensity(const Vector3d &position) const {
     return 0;
   };
+  virtual double getHIDensity(const Vector3d &position) const {
+  	return 0;
+  };
+  virtual double getHIIDensity(const Vector3d &position) const {
+  	return 0;
+  };
+  virtual double getH2Density(const Vector3d &position) const {
+  	return 0;
+  };
   
+  virtual bool getisforHI() {
+  	return false;
+  }
+  virtual bool getisforHII() {
+  	return false;
+  }
+  virtual bool getisforH2() {
+  	return false;
+  }
 };
 
 }//namespace crpropa

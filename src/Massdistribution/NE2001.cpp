@@ -116,10 +116,7 @@ void NE2001::setuseLISM(bool use) {
 	useLISM = use;
 } */
 
-double NE2001::getDensity(const Vector3d &position) const {
-	return getHIIDensity(position);
-}
-	
+
 double NE2001::getHIIDensity(const Vector3d &position) const {
 	double n = 0;
 	double x = position.x;
@@ -160,7 +157,10 @@ double NE2001::getHIIDensity(const Vector3d &position) const {
 	}
 	
 }
-
+double NE2001::getDensity(const Vector3d &position) const {
+	return NE2001::getHIIDensity(position);
+}
+	
 } //namespace
 		
 	

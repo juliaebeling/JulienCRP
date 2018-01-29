@@ -24,13 +24,11 @@ private:
 	bool isforH2 = true;
 	double Rsun = 8500*pc;
 	
+
+public:
 	Vector3d CMZTrafo(const Vector3d &position) const; 
 	Vector3d DISKTrafo(const Vector3d &position) const;
 
-public:
-
-	Ferrie();
-	
 	double getDensity(const Vector3d &position) const;
 	double getHIDensity(const Vector3d &position) const;
 	double getHIIDensity(const Vector3d &position) const;

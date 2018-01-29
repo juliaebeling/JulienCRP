@@ -17,7 +17,8 @@ namespace crpropa {
 */
 
 class Pohl08: public Density {
-	ScalarGrid Grid;
+
+	ScalarGrid Grid = ScalarGrid(Vector3d(-14950*pc,-14950*pc,-487.5*pc),300,300,10,100*pc);
 		
 	// Information on Modeltyp. DO NOT CHANGE
 	bool isforHI = false;
@@ -26,7 +27,7 @@ class Pohl08: public Density {
 	bool useReducedGrid=true;	// use every 4th value of Pohls Grid -> equal spacing in all axis 
 
 public:
-	Pohl08();
+	
 	void loadPohlGrid();
 	double getDensity(const Vector3d &position) const;
 	double getH2Density(const Vector3d &position) const;
@@ -37,7 +38,7 @@ public:
 	
 	bool getuseReducedGrid();
 	void setuseReducedGrid(bool reduced);
-	
+
 	
 };
 
