@@ -1,5 +1,5 @@
-#ifndef CRPROPA_NAKANSHI_H
-#define CRPROPA_NAKANSHI_H
+#ifndef CRPROPA_NAKANISHI_H
+#define CRPROPA_NAKANISHI_H
 
 #include "crpropa/Units.h"
 #include "crpropa/Vector3.h"
@@ -10,9 +10,9 @@
 
 namespace crpropa {
 
-class Nakanshi {
+class Nakanishi {
 /*
- @class Nakanshi
+ @class Nakanishi
  @brief Modell for HI arXiv:astro-ph/0304338
 	Modell for H2 arxiv:astro-ph/0610769
 */ 
@@ -24,7 +24,7 @@ private:
 
 public:
 
-	Nakanshi();
+	Nakanishi();
 	double getDensity(const Vector3d &position);
 	double getHIDensity(const Vector3d &position);
 	double getH2Density(const Vector3d &position);
@@ -40,12 +40,13 @@ public:
 	bool getisforHII();
 	bool getisforH2();
 	
-
+	void setisforHI(bool HI);
+	void setisforH2(bool H2);
 };
 
 } //namespace crpropa
 
-#endif //CRPROPA_NAKANSHI_H
+#endif //CRPROPA_NAKANISHI_H
 
 		
 

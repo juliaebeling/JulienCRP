@@ -16,7 +16,7 @@ double Cordes::getHIIDensity(const Vector3d &position) const {
 	double R = sqrt(pow(x,2)+pow(y,2));
 	
 	n += 0.025*exp(-fabs(z)/1)*exp(-pow(R/20,2));
-	n += 0.2*exp(-fabs(z)/0.15)*exp(-pow(R/2,2));
+	n += 0.2*exp(-fabs(z)/0.15)*exp(-pow((R-4)/2,2));
 	
 	return n;
 }

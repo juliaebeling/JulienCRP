@@ -22,7 +22,7 @@ private:
 	bool isforHI = true;		// standard for all kind of distribution
 	bool isforHII = true;
 	bool isforH2 = true;
-	double Rsun = 8500*pc;
+	double Rsun = 8500*pc;	
 	
 
 public:

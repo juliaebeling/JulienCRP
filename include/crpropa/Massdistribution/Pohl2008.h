@@ -9,35 +9,39 @@
 
 #include <string>
 
+
 namespace crpropa {
 
 /**
 	@class Pohl08 
 	@brief Grid for H2 density based on arxiv:0712.4264 Fits avalibal at http://www.app.physik.uni-potsdam.de/gas.html 
+	Grid for HI density based on private communication with Martin Pohl.
 */
 
 class Pohl08: public Density {
+	ScalarGrid H2density = ScalarGrid(Vector3d(-15*kpc,-15*kpc,-500*pc),300,300,10,100*pc);
+	ScalarGrid HIdensity = ScalarGrid(Vector3d(-20*kpc,-20*kpc,-1500*pc),400,400,30,100*pc);	
 
-	ScalarGrid Grid = ScalarGrid(Vector3d(-14950*pc,-14950*pc,-487.5*pc),300,300,10,100*pc);
-		
-	// Information on Modeltyp. DO NOT CHANGE
-	bool isforHI = false;
+	bool isforHI = true;
 	bool isforHII = false;
 	bool isforH2 = true; 
-	bool useReducedGrid=true;	// use every 4th value of Pohls Grid -> equal spacing in all axis 
+
 
 public:
+
 	
-	void loadPohlGrid();
+	void loadGridHI();
+	void loadGridH2();
 	double getDensity(const Vector3d &position) const;
 	double getH2Density(const Vector3d &position) const;
+	double getHIDensity(const Vector3d &position) const;
 	
 	bool getisforHI();
 	bool getisforHII();
 	bool getisforH2();
 	
-	bool getuseReducedGrid();
-	void setuseReducedGrid(bool reduced);
+	void setisforHI(bool HI);
+	void setisforH2(bool H2);
 
 	
 };
