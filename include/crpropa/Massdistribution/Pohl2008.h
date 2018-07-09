@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "kiss/logger.h"
+
 
 namespace crpropa {
 

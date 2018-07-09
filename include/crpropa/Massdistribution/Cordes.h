@@ -7,6 +7,8 @@
 
 #include <math.h>
 
+#include "kiss/logger.h"
+
 namespace crpropa {
 /*
 	@class Cordes

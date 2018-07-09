@@ -8,9 +8,11 @@
 #include <string>
 #include <math.h>
 
+#include "kiss/logger.h"
+
 namespace crpropa {
 
-class Nakanishi {
+class Nakanishi: public Density{
 /*
  @class Nakanishi
  @brief Modell for HI arXiv:astro-ph/0304338
@@ -25,15 +27,15 @@ private:
 public:
 
 	Nakanishi();
-	double getDensity(const Vector3d &position);
-	double getHIDensity(const Vector3d &position);
-	double getH2Density(const Vector3d &position);
+	double getDensity(const Vector3d &position)const;
+	double getHIDensity(const Vector3d &position)const;
+	double getH2Density(const Vector3d &position)const;
 
-	double getHIScaleheight(const Vector3d &position);
-	double getHIPlanedensity(const Vector3d &position);
+	double getHIScaleheight(const Vector3d &position)const;
+	double getHIPlanedensity(const Vector3d &position)const;
 
-	double getH2Scaleheight(const Vector3d &position);
-	double getH2Planedensity(const Vector3d &position);
+	double getH2Scaleheight(const Vector3d &position)const;
+	double getH2Planedensity(const Vector3d &position)const;
 
 
 	bool getisforHI();

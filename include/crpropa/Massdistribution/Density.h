@@ -38,6 +38,7 @@ class Density: public Referenced {
   }
 };
 
+
 }//namespace crpropa
 
 #endif //CRPROPA_DENSITY_H

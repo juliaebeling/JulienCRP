@@ -1,9 +1,9 @@
-#include "crpropa/Massdistribution/Ferrie07.h"
+#include "crpropa/Massdistribution/Ferriere07.h"
 
 namespace crpropa {
 
 
-Vector3d Ferrie::CMZTrafo(const Vector3d &position) const {
+Vector3d Ferriere::CMZTrafo(const Vector3d &position) const {
 	
 	double xC = -50*pc;		//offset
 	double yC = 50*pc;
@@ -13,10 +13,21 @@ Vector3d Ferrie::CMZTrafo(const Vector3d &position) const {
 	pos.x = (position.x - xC)*cos(ThettaC) + (position.y -yC)*sin(ThettaC);
 	pos.y = -(position.x -xC)*sin(ThettaC) + (position.y - yC)*cos(ThettaC);
 	pos.z = position.z;
+	
+	// check if something went wrong with transformation
+	bool NaN = std::isnan(pos.getR());
+	if(NaN == true){
+		KISS_LOG_WARNING
+			<< "\nTransformation with nan-Position occured: \n"
+			<< "in density module Ferriere 2007 in the CMZ-Trafo\n " 
+			<< "Position In = " << position << "\n"
+			<< "Position Trafo = " << pos << "\n";
+	}		
+	
 	return pos;
 }
 
-Vector3d Ferrie::DISKTrafo(const Vector3d &position) const { 
+Vector3d Ferriere::DISKTrafo(const Vector3d &position) const { 
 
 	double alphaD = 13.5/180*M_PI;
 	double betaD = 20/180*M_PI;
@@ -38,22 +49,35 @@ Vector3d Ferrie::DISKTrafo(const Vector3d &position) const {
 	pos.z += y*sin(alphaD)*cos(betaD);
 	pos.z += z*cos(alphaD)*cos(betaD);
 	
+	// check if something went wrong with transformation
+	bool NaN = std::isnan(pos.getR());
+	if(NaN == true){
+		KISS_LOG_WARNING
+			<< "\nTransformation with nan-Position occured: \n"
+			<< "in density module Ferriere 2007 in the DISK-Trafo\n " 
+			<< "Position In = " << position << "\n"
+			<< "Position Trafo = " << pos << "\n";
+	}		
+	
 	return pos;
 }
 	
 	
 
 
-double Ferrie::getHIDensity(const Vector3d &position) const {
+double Ferriere::getHIDensity(const Vector3d &position) const {
 	
 	double n = 0;
 	double R = sqrt(pow(position.x,2)+pow(position.y,2));
 	
-	if(R<3*kpc) //INNEN
+	bool innen = R<3*kpc;
+	bool aussen = !innen;
+	
+	if(innen == true) 
 	{
 		double nCMZ = 0;	//Center
 		
-		Vector3d pos = Ferrie::CMZTrafo(position);	//Koordinaten Trafo
+		Vector3d pos = CMZTrafo(position);	//Koordinaten Trafo
 		double x = pos.x/pc;
 		double y = pos.y/pc;
 		double z = pos.z/pc;
@@ -63,7 +87,7 @@ double Ferrie::getHIDensity(const Vector3d &position) const {
 		
 		double nDisk = 0;		//Disk
 		
-		pos = Ferrie::DISKTrafo(position);	//Koordinaten Trafo
+		pos = DISKTrafo(position);	//Koordinaten Trafo
 		x = pos.x/pc;
 		y = pos.y/pc;
 		z = pos.z/pc;
@@ -103,14 +127,33 @@ double Ferrie::getHIDensity(const Vector3d &position) const {
 		
 		n = nWarm + nCold;
 	}
-	return n;
+	
+	// check if density is NAN
+	// return 0 instead
+	bool NaN = std::isnan(n);
+	if(NaN == true){
+		KISS_LOG_WARNING
+			<< "\nDensity with 'nan' occured: \n"
+			<< "postion = " << position << "\n"
+			<< "density-model: Ferriere 2007 \n"
+			<< "density-type: HI (atomic)\n"
+			<< "region innen = " << innen << "\n"
+			<< "region außen = " << aussen << "\n"
+			<< "density is set to 0. \n";
+			return 0.;
+	}
+	
+	return n/ccm;
 }
 
-double Ferrie::getHIIDensity(const Vector3d &position) const {
+double Ferriere::getHIIDensity(const Vector3d &position) const {
 
 	double n = 0;
 	double R = sqrt(pow(position.x,2)+pow(position.y, 2));
-	if(R<3*kpc){   //innen
+	bool innen = R< 3*kpc;
+	bool aussen = !innen;
+	
+	if(innen == true){   //innen
 	
 	double x = position.x/pc;
 	double y = position.y/pc;
@@ -154,21 +197,38 @@ double Ferrie::getHIIDensity(const Vector3d &position) const {
 		n=nWarm;		
 	}
 	
-	return n;
+	// check if density is NAN
+	// return 0 instead
+	bool NaN = std::isnan(n);
+	if(NaN == true){
+		KISS_LOG_WARNING
+			<< "\nDensity with 'nan' occured: \n"
+			<< "postion = " << position << "\n"
+			<< "density-model: Ferriere 2007 \n"
+			<< "density-type: HII (ionised) \n"
+			<< "region innen = " << innen << "\n"
+			<< "region außen = " << aussen << "\n"
+			<< "density is set to 0. \n";
+			return 0.;
+	}
+		
+	return n/ccm;
 }
 
 
-double Ferrie::getH2Density(const Vector3d &position) const{
+double Ferriere::getH2Density(const Vector3d &position) const{
 
 	double n=0;
 	double R=sqrt(pow(position.x,2)+pow(position.y,2));
+	bool innen = R<3*kpc;	
+	bool aussen = !innen;
 	
-	if(R<3*kpc) {		//innen
+	if(innen == true) {		
 	
 		double nCMZ = 0;
 		double nDISK = 0;
 		
-		Vector3d pos = Ferrie::CMZTrafo(position); //Koord Trafo
+		Vector3d pos =CMZTrafo(position); //Koord Trafo
 		double x = pos.x/pc;
 		double y = pos.y/pc;
 		double z = pos.z/pc;
@@ -177,90 +237,97 @@ double Ferrie::getH2Density(const Vector3d &position) const{
 		nCMZ = exp(-pow((A-125)/137,4))*exp(-fabs(z)/18);
 		nCMZ *= 150;		//Density at Center for scale
 		
-		pos = Ferrie::DISKTrafo(position);
+		pos =DISKTrafo(position);
 		x=pos.x/pc;
 		y=pos.y/pc;
 		z=pos.z/pc;
 		
 		A = sqrt(pow(x,2)+pow(3.1*y,2));
 		nDISK = exp(-pow((A-1200)/438,4))*exp(-pow(z/42,2));
-		nDISK *= 4.8;		//Density at Center for scale
+		nDISK *= 4.8;		//density at center for scale
 		
 		n = nCMZ + nDISK;
 	}	
-	else {		//außen
+	else {		//outer region
 		double z = position.z/pc;
 		n = pow(R/Rsun, -0.58);
 		n *= exp(-(pow(R-4*kpc,2)-pow(Rsun-4*kpc,2))/pow(2.9*kpc,2));
 		n *= exp(-pow(z/(81*pow(R/Rsun,0.58)),2));
-		n *= 0.58;		//Density at Center for scale
+		n *= 0.58;		//density at center for scale
 	}
-	return n;
+	
+		// check if density is NAN
+	// return 0 instead
+	bool NaN = std::isnan(n);
+	if(NaN == true){
+		KISS_LOG_WARNING
+			<< "\nDensity with 'nan' occured:\n"
+			<< "postion = " << position << "\n"
+			<< "density-model: Ferriere 2007 \n"
+			<< "density-type: H2 (molecular)\n"
+			<< "region innen = " << innen << "\n"
+			<< "region außen = " << aussen << "\n"
+			<< "density is set to 0. \n";
+			return 0;
+	}
+	
+	return n/ccm;
 }
 
-double Ferrie::getDensity(const Vector3d &position) const{ 
+double Ferriere::getDensity(const Vector3d &position) const{ 
 
 	double n=0; 
 	if(isforHI){
-		n += Ferrie::getHIDensity(position);
+		n += getHIDensity(position);
 	}
 	if(isforHII){
-		n+=Ferrie::getHIIDensity(position);
+		n+=getHIIDensity(position);
 	}
 	if(isforH2){
-		n+=Ferrie::getH2Density(position);
+		n+=getH2Density(position);
 	}
+	
+	//check if any density is activ and give warning if not
+	bool anyDensityActive = isforHI||isforHII||isforH2;
+
+	if(anyDensityActive == false){
+		KISS_LOG_WARNING
+			<< "\n tryed to get density although all density-types are deaktivated \n"
+			<< "density-module: Ferriere\n"
+			<< "returned 0 density\n"
+			<< "please use constant Density with 0 \n";
+	}
+	
 	return n;
 }
 
 
-void Ferrie::setisforHI(bool HI){
+void Ferriere::setisforHI(bool HI){
 
 	isforHI = HI;
-	if(isforHI)
-		return;
-	if(isforH2)
-		return;
-	if(isforHII)
-		return;
-	isforH2=true;
 }
 
-void Ferrie::setisforHII(bool HII){
+void Ferriere::setisforHII(bool HII){
 	
 	isforHII = HII;
-	if(isforHI)
-		return;
-	if(isforH2)
-		return;
-	if(isforHII)
-		return;
-	isforH2=true;
 }
 
-void Ferrie::setisforH2(bool H2){
+void Ferriere::setisforH2(bool H2){
 	
 	isforH2 = H2;
-	if(isforHI)
-		return;
-	if(isforH2)
-		return;
-	if(isforHII)
-		return;
-	isforH2=true;
 }
 
-bool Ferrie::getisforHI(){
+bool Ferriere::getisforHI(){
 	
 	return isforHI;
 }
 
-bool Ferrie::getisforHII(){
+bool Ferriere::getisforHII(){
 	
 	return isforHII;
 }
 	
-bool Ferrie::getisforH2(){
+bool Ferriere::getisforH2(){
 	
 	return isforH2;
 }

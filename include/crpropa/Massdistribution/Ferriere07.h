@@ -1,5 +1,5 @@
-#ifndef CRPROPA_FERRIE07_H
-#define CRPROPA_FERRIE07_H
+#ifndef CRPROPA_FERRIERE07_H
+#define CRPROPA_FERRIERE07_H
 
 #include "crpropa/Massdistribution/Density.h"
 #include "crpropa/Vector3.h"
@@ -7,15 +7,21 @@
 
 #include <math.h>
 
+#include "kiss/logger.h"
+
+
 namespace crpropa {
 /**
- @class FerrieI
- @brief distribution for Ferrie 2007: 
-	Außen: 	ApJ, 497, 759
-	Innen:	arxiv:	astro-ph/0702532
+ @class Ferriere 
+ @brief distribution of hydrogen in the Milky Way 
+ * Here in model Ferriere 2007
+ * seperated in 2 regions (inner, outer). The border is for R=3 kpc in galactocentric radius. 
+ * model is discribed in 
+Außen: ApJ, 497, 759
+Innen:	arxiv:	astro-ph/0702532
 */
 
-class Ferrie: public Density {
+class Ferriere: public Density {
 
 private:
 
@@ -46,6 +52,6 @@ public:
 
 }//namespace crpropa
 
-#endif //CRPROPA_FERRIE07_H
+#endif //CRPROPA_FERRIERE07_H
 
 
