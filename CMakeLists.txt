@@ -384,7 +384,6 @@ add_library(crpropa SHARED
 	src/Massdistribution/Ferriere07.cpp
 	src/Massdistribution/Cordes.cpp
 	src/Massdistribution/Pohl2008.cpp
-	src/Massdistribution/NE2001.cpp
 	src/Massdistribution/ConstantDensity.cpp
 	src/magneticField/ArchimedeanSpiralField.cpp
 	src/advectionField/AdvectionField.cpp
