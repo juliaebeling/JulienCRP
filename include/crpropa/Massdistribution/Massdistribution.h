@@ -9,18 +9,37 @@
 #include <string>
 #include <vector>
 
+#include "kiss/logger.h"
 
 namespace crpropa {
 
 class Massdistribution: public Density {
-	std::vector<ref_ptr<Density> >distributionList;		// Vector with information on distribuition for HI (0); HII (1); H2 (2)
+
+ref_ptr<Density> HIDist;
+ref_ptr<Density> HIIDist;
+ref_ptr<Density> H2Dist;
+
 bool isforHI=false;
 bool isforHII=false;
 bool isforH2=false;
 
+bool HIisload=false;
+bool HIIisload=false;
+bool H2isload=false;
+
+
 public:
+	Massdistribution();
 	double getDensity(const Vector3d &position) const;
-	void add(Density &density);	
+	void add(ref_ptr<crpropa::Density> dens);	
+	
+	bool getisforHI();
+	bool getisforHII();
+	bool getisforH2();
+	
+	void deaktivateHI();
+	void deaktivateHII();
+	void deaktivateH2();
 
 };
 	
