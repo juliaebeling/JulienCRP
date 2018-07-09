@@ -87,6 +87,10 @@ static const double centimeter = 0.01 * meter;
 static const double km = kilometer;
 static const double cm = centimeter;
 
+//volume
+static const double 
+ccm = cm*cm*cm;
+
 // second
 static const double nanosecond = 1e-9 * second;
 static const double microsecond = 1e-6 * second;
