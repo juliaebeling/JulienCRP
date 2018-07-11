@@ -63,6 +63,18 @@ double Massdistribution::getDensity(const Vector3d &position) const{
 	return n;
 }
 
+double Massdistribution::getHIDensity(const Vector3d &position) const {
+	return HIDist->getHIDensity(position);
+}
+
+double Massdistribution::getHIIDensity(const Vector3d &position) const {
+	return HIIDist->getHIIDensity(position);
+}
+
+double Massdistribution::getH2Density(const Vector3d &position) const {
+	return H2Dist->getH2Density(position);
+}
+
 bool Massdistribution::getisforHI() {
 	return isforHI;
 }
@@ -98,6 +110,27 @@ double MassdistributionSuperposition::getDensity(const Vector3d &position) const
 	double n = 0.;
 	for (int i = 0; i < DensityList.size(); i++)
 		n += DensityList[i]->getDensity(position);
+	return n;
+}
+
+double MassdistributionSuperposition::getHIDensity(const Vector3d &position) const {
+	double n = 0.;
+	for (int i = 0; i < DensityList.size(); i++)
+		n += DensityList[i]->getHIDensity(position);
+	return n;
+}
+
+double MassdistributionSuperposition::getHIIDensity(const Vector3d &position) const {
+	double n = 0.;
+	for (int i = 0; i < DensityList.size(); i++)
+		n += DensityList[i]->getHIIDensity(position);
+	return n;
+}
+
+double MassdistributionSuperposition::getH2Density(const Vector3d &position) const {
+	double n = 0.;
+	for (int i = 0; i < DensityList.size(); i++)
+		n += DensityList[i]->getH2Density(position);
 	return n;
 }
 

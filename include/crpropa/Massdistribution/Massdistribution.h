@@ -31,6 +31,10 @@ bool H2isload=false;
 public:
 	Massdistribution();
 	double getDensity(const Vector3d &position) const;
+	double getHIDensity(const Vector3d &position) const;
+	double getHIIDensity(const Vectore3d &position) const;
+	double getH2Density(const Vector3d &position) const;
+
 	void add(ref_ptr<crpropa::Density> dens);	
 	
 	bool getisforHI();
@@ -50,6 +54,9 @@ std::vector<ref_ptr<Density>> DensityList ;
 public:
 	void addDensity(ref_ptr<Density> density);
 	double getDensity(const Vector3d &position) const;
+	double getHIDensity(const Vector3d &position) const;
+	double getHIIDensity(const Vectore3d &position) const;
+	double getH2Density(const Vector3d &position) const;
 };
 
 	
