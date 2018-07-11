@@ -42,6 +42,16 @@ public:
 	void deaktivateH2();
 
 };
+
+class MassdistributionSuperposition: public Density {
+
+std::vector<ref_ptr<Density>> DensityList ;
+
+public:
+	void addDensity(ref_ptr<Density> density);
+	double getDensity(const Vector3d &position) const;
+};
+
 	
 } //namespace crpropa
 

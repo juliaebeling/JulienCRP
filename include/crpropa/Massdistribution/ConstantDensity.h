@@ -28,7 +28,7 @@ private:
 	bool isforH2 = false;
 
 public:
-	
+	constantDensity(double HI, double HII, double H2);
 	double getDensity(const Vector3d *position) const;
 	
 	double getHIDensity(const Vector3d *position) const;
@@ -40,8 +40,16 @@ public:
 	bool getisforH2();
 	
 	void setHI(bool activate, double densitynumber);
+	void setHI(bool activate);	//change type status and keep densitynumber as it is
+	void setHI(double densitynumber);//change densitynumber and keep type status as it is
+	
 	void setHII(bool activate, double densitynumber);
+	void setHII(bool activate);
+	void setHII(double densitynumber);
+	
 	void setH2(bool activate, double densitynumber);
+	void setH2(bool activate);
+	void setH2(double densitynumber);
 };
 
 } //namespace

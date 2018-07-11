@@ -488,6 +488,10 @@ if(ENABLE_TESTING)
 	target_link_libraries(testAdvectionField crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
 	add_test(testAdvectionField testAdvectionField)
 
+	add_executable(testDensity test/testDensity.cpp)
+	target_link_libraries(testDensity crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
+	add_test(testDensity testDensity)
+
 	add_executable(testDINT test/testDINT.cpp)
 	target_link_libraries(testDINT crpropa gtest gtest_main pthread ${COVERAGE_LIBS})
 	add_test(testDINT testDINT)

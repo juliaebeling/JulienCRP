@@ -40,21 +40,14 @@ double Massdistribution::getDensity(const Vector3d &position) const{
 	
 	if(isforHI){
 		n = HIDist->getHIDensity(position);
-		
-		KISS_LOG_WARNING
-			<<"\nHI Dichte = " << n << "\n";
 		noOptionSelected = false;
 	}
 	if(isforHII){
 		n += this->HIIDist->getHIIDensity(position);
-		KISS_LOG_WARNING
-			<<"\nHII Dichte = " << n << "\n";
 		noOptionSelected = false;
 	}
 	if(isforH2){
 		n += this->H2Dist->getH2Density(position);
-		KISS_LOG_WARNING
-			<<"\nH2 Dichte = " << n << "\n";
 		noOptionSelected = false;
 	}
 	
@@ -97,7 +90,16 @@ void Massdistribution::deaktivateH2() {
 	return;
 }
 
-	
+void MassdistributionSuperposition::addDensity(ref_ptr<Density> dens) {
+	DensityList.push_back(dens);
+}
+
+double MassdistributionSuperposition::getDensity(const Vector3d &position) const {
+	double n = 0.;
+	for (int i = 0; i < DensityList.size(); i++)
+		n += DensityList[i]->getDensity(position);
+	return n;
+}
 
 } //namespace crpropa
 
