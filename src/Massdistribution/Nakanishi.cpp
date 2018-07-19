@@ -34,7 +34,7 @@ double Nakanishi::getH2Scaleheight(const Vector3d &position) const {
 	double x = position.x/kpc;
 	double y = position.y/kpc;
 	double R = sqrt(pow(x,2)+ pow(y,2));
-	double Scaleheight = 1.06e-3*( 11.2*exp(0.28*R)+42.78);
+	double Scaleheight = 1.06e-3*( 10.8*exp(0.28*R)+42.78);
 	return Scaleheight*kpc;
 }
 

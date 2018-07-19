@@ -23,17 +23,18 @@ private:
 	double HIIdensitynumber = 0/ccm;
 	double H2densitynumber  = 0/ccm;
 	
-	bool isforHI = true;
+	bool isforHI = false;
 	bool isforHII = false;
 	bool isforH2 = false;
 
 public:
 	constantDensity(double HI, double HII, double H2);
-	double getDensity(const Vector3d *position) const;
+	constantDensity(double densitynumber);
+	double getDensity(const Vector3d &position) const;
 	
-	double getHIDensity(const Vector3d *position) const;
-	double getHIIDensity(const Vector3d *position) const;
-	double getH2Density(const Vector3d *position) const;
+	double getHIDensity(const Vector3d &position) const;
+	double getHIIDensity(const Vector3d &position) const;
+	double getH2Density(const Vector3d &position) const;
 	
 	bool getisforHI();
 	bool getisforHII();

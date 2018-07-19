@@ -12,8 +12,7 @@ void Massdistribution::add(ref_ptr<Density> dens) {
 	bool HII= dens->getisforHII();
 	bool H2 = dens->getisforH2();	
 	
-	if(HI== true){
-		
+	if(HI == true){
 		HIDist = dens;
 		isforHI = true;
 	}
