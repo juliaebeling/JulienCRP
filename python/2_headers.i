@@ -267,6 +267,9 @@
 %template(CandidateRefPtr) crpropa::ref_ptr<crpropa::Candidate>;
 %include "crpropa/Candidate.h"
 
+%feature("director") crpropa::Surface;
+%feature("director") crpropa::ClosedSurface;
+%include "crpropa/Geometry.h"
 
 %template(ModuleRefPtr) crpropa::ref_ptr<crpropa::Module>;
 %template(stdModuleList) std::list< crpropa::ref_ptr<crpropa::Module> >;
@@ -308,7 +311,7 @@
 %include "crpropa/magneticField/QuimbyMagneticField.h"
 %include "crpropa/magneticField/AMRMagneticField.h"
 %include "crpropa/magneticField/JF12Field.h"
-%include "crpropa/magneticField/PshirkovField.h"
+%include "crpropa/magneticField/PT11Field.h"
 %include "crpropa/magneticField/ArchimedeanSpiralField.h"
 %include "crpropa/module/BreakCondition.h"
 %include "crpropa/module/Boundary.h"
@@ -397,8 +400,6 @@
 
 %include "crpropa/module/HDF5Output.h"
 %include "crpropa/module/OutputShell.h"
-%include "crpropa/module/OutputROOT.h"
-%include "crpropa/module/OutputCRPropa2.h"
 %include "crpropa/module/EMCascade.h"
 %include "crpropa/module/PhotonEleCa.h"
 %include "crpropa/module/PhotonOutput1D.h"
@@ -408,6 +409,7 @@
 %include "crpropa/module/PhotoDisintegration.h"
 %include "crpropa/module/ElasticScattering.h"
 %include "crpropa/module/Redshift.h"
+%include "crpropa/module/RestrictToRegion.h"
 %include "crpropa/module/EMPairProduction.h"
 %include "crpropa/module/EMDoublePairProduction.h"
 %include "crpropa/module/EMTripletPairProduction.h"
@@ -429,7 +431,7 @@ class ModuleListIterator {
   public:
         ModuleListIterator(
                 crpropa::ModuleList::iterator _cur,
-                crpropa::ModuleList::iterator _end) : 
+                crpropa::ModuleList::iterator _end) :
                         cur(_cur), end(_end) {}
         ModuleListIterator* __iter__() { return this; }
         crpropa::ModuleList::iterator cur;
@@ -452,7 +454,7 @@ class ModuleListIterator {
 
 %extend crpropa::ModuleList {
   ModuleListIterator __iter__() {
-        return ModuleListIterator($self->begin(), $self->end()); 
+        return ModuleListIterator($self->begin(), $self->end());
   }
   crpropa::ref_ptr<crpropa::Module> __getitem__(size_t i) {
         if (i >= $self->size()) {
@@ -475,7 +477,7 @@ class ParticleCollectorIterator {
   public:
         ParticleCollectorIterator(
                 crpropa::ParticleCollector::iterator _cur,
-                crpropa::ParticleCollector::iterator _end) : 
+                crpropa::ParticleCollector::iterator _end) :
                         cur(_cur), end(_end) {}
         ParticleCollectorIterator* __iter__() { return this; }
         crpropa::ParticleCollector::iterator cur;
@@ -498,7 +500,7 @@ class ParticleCollectorIterator {
 
 %extend crpropa::ParticleCollector {
   ParticleCollectorIterator __iter__() {
-        return ParticleCollectorIterator($self->begin(), $self->end()); 
+        return ParticleCollectorIterator($self->begin(), $self->end());
   }
   crpropa::ref_ptr<crpropa::Candidate> __getitem__(size_t i) {
         if (i >= $self->size()) {
@@ -518,7 +520,7 @@ class ParticleCollectorIterator {
                 #else
                     PySlice_GetIndicesEx((PySliceObject*)param, len, &start, &stop, &step, &slicelength);
                 #endif
-                
+
                 for(crpropa::ParticleCollector::iterator itr = $self->begin(); itr != $self->end(); ++itr){
                         if( i >= start && i < stop){
                                 result.push_back(itr->get());
@@ -528,7 +530,7 @@ class ParticleCollectorIterator {
                 return result;
         } else {
                 throw RangeError();
-        }        
+        }
   }
   size_t __len__() {
         return $self->size();

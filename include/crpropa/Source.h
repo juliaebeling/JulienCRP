@@ -9,6 +9,9 @@
 #include <vector>
 
 namespace crpropa {
+/** @addtogroup SourceFeatures
+ *  @{
+ */
 
 /**
  @class SourceFeature
@@ -67,11 +70,6 @@ public:
 };
 
 
-/** @defgroup SourceFeature SourceFeatures
- *  Sourcefeatures are added to sources and manipulate the proeprties of the
- *  emitted candidate.
- *  @{
- */
 
 
 /**
@@ -182,6 +180,21 @@ class SourceUniformSphere: public SourceFeature {
 	double radius;
 public:
 	SourceUniformSphere(Vector3d center, double radius);
+	void prepareParticle(ParticleState &particle) const;
+	void setDescription();
+};
+
+/**
+ @class SourceUniformHollowSphere
+ @brief Uniform random source positions inside of a hollow sphere wall
+ */
+class SourceUniformHollowSphere: public SourceFeature {
+	Vector3d center;
+	double radius_inner;
+	double radius_outer;
+public:
+	SourceUniformHollowSphere(Vector3d center,
+			double radius_inner, double double_outer);
 	void prepareParticle(ParticleState &particle) const;
 	void setDescription();
 };

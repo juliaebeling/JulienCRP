@@ -169,20 +169,7 @@ if (ENABLE_GALACTICMAGETICLENS)
 	list(APPEND CRPROPA_EXTRA_SOURCES src/magneticLens/ParticleMapsContainer.cpp)
 endif (ENABLE_GALACTICMAGETICLENS)
 
-# ROOT (optional for ROOT output)
-option(ENABLE_ROOT "ROOT Output" ON)
-if(ENABLE_ROOT)
-	find_package(ROOT)
-	if(ROOT_FOUND)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS}")
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ROOT_LIBS}")
-		set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${ROOT_LIBS}")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ROOT_LIBS}")
-		add_definitions(-DCRPROPA_HAVE_ROOT)
-		list(APPEND CRPROPA_SWIG_DEFINES -DCRPROPA_HAVE_ROOT)
-		list(APPEND CRPROPA_EXTRA_LIBRARIES Core RIO Tree)
-	endif(ROOT_FOUND)
-endif(ENABLE_ROOT)
+
 
 # OpenMP (optional for shared memory multiprocessing)
 option(ENABLE_OPENMP "OpenMP for multithreading" ON)
@@ -194,6 +181,11 @@ include(FindOpenMP)
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 	endif(OPENMP_FOUND)
 endif(ENABLE_OPENMP)
+
+# Additional configuration OMP_SCHEDULE
+set(OMP_SCHEDULE "static,100" CACHE STRING "FORMAT type,chunksize")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/ModuleList.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/src/ModuleList.cpp" @ONLY)
+list(APPEND CRPROPA_EXTRA_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/src/ModuleList.cpp")
 
 # Google Performance Tools (optional as possible performance tweak for OpenMP)
 find_package(GooglePerfTools)
@@ -318,7 +310,7 @@ endif(DOWNLOAD_DATA)
 if(EXISTS ${CMAKE_BINARY_DIR}/data.tar.gz)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/data.tar.gz WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
-	message(WARNING "CRPropa data file not found at ${CMAKE_BINARY_DIR}/data.tar.gz 
+	message(WARNING "CRPropa data file not found at ${CMAKE_BINARY_DIR}/data.tar.gz
 CRPropa should compile, but will likely not work properly! Please install data file manually, or use the automatic download which is enabled by default.")
 endif()
 
@@ -334,6 +326,7 @@ add_library(crpropa SHARED
 	src/Common.cpp
 	src/Cosmology.cpp
 	src/EmissionMap.cpp
+	src/Geometry.cpp
 	src/GridTools.cpp
 	src/Module.cpp
 	src/ModuleList.cpp
@@ -360,8 +353,6 @@ add_library(crpropa SHARED
 	src/module/NuclearDecay.cpp
 	src/module/Observer.cpp
 	src/module/Output.cpp
-	src/module/OutputCRPropa2.cpp
-	src/module/OutputROOT.cpp
 	src/module/OutputShell.cpp
 	src/module/ParticleCollector.cpp
 	src/module/PhotoDisintegration.cpp
@@ -370,6 +361,7 @@ add_library(crpropa SHARED
 	src/module/PhotonOutput1D.cpp
 	src/module/PropagationCK.cpp
 	src/module/Redshift.cpp
+	src/module/RestrictToRegion.cpp
 	src/module/SimplePropagation.cpp
 	src/module/SynchrotronRadiation.cpp
 	src/module/TextOutput.cpp
@@ -385,6 +377,7 @@ add_library(crpropa SHARED
 	src/Massdistribution/Cordes.cpp
 	src/Massdistribution/Pohl2008.cpp
 	src/Massdistribution/ConstantDensity.cpp
+	src/magneticField/PT11Field.cpp
 	src/magneticField/ArchimedeanSpiralField.cpp
 	src/advectionField/AdvectionField.cpp
 	${CRPROPA_EXTRA_SOURCES}
@@ -437,7 +430,7 @@ if(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
 	file(GLOB_RECURSE CRPROPA_SWIG_INPUTS python/*.i)
 	set_source_files_properties( ${CMAKE_CURRENT_BINARY_DIR}/crpropa_wrap.cxx PROPERTIES GENERATED true )
 	add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/crpropa_wrap.cxx
-		COMMAND swig ${BUILTIN} -c++ -python ${PY3} -I${CMAKE_SOURCE_DIR}/include ${CRPROPA_SWIG_DEFINES} -dirprot -o ${CMAKE_CURRENT_BINARY_DIR}/crpropa_wrap.cxx -outdir ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/python/crpropa${BUILTIN}.i
+    COMMAND swig ${BUILTIN} -c++ -python ${PY3} -I${CMAKE_SOURCE_DIR}/include -I${CMAKE_SOURCE_DIR}/libs/HepPID/include ${CRPROPA_SWIG_DEFINES} -dirprot -o ${CMAKE_CURRENT_BINARY_DIR}/crpropa_wrap.cxx -outdir ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/python/crpropa${BUILTIN}.i
 		DEPENDS ${CRPROPA_SWIG_INPUTS} ${CRPROPA_INCLUDES} )
 
 	add_library(crpropa-swig MODULE ${CMAKE_CURRENT_BINARY_DIR}/crpropa_wrap.cxx)
@@ -460,6 +453,20 @@ install(TARGETS crpropa DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/data/ DESTINATION share/crpropa/ PATTERN ".git" EXCLUDE)
+
+install(DIRECTORY libs/kiss/include/ DESTINATION include)
+
+# ------------------------------------------------------------------
+# Documentation
+# ------------------------------------------------------------------
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/DoxygenLayout.xml ${CMAKE_CURRENT_BINARY_DIR}/DoxygenLayout.xml COPYONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Mainpage.md.in ${CMAKE_CURRENT_BINARY_DIR}/Mainpage.md)
+	add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating API documentation with Doxygen" VERBATIM
+)
+endif(DOXYGEN_FOUND)
 
 
 # ----------------------------------------------------------------------------
