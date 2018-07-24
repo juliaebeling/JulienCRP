@@ -163,5 +163,12 @@ double MassdistributionSuperposition::getH2Density(const Vector3d &position) con
 	return n;
 }
 
+double MassdistributionSuperposition::getNucleonDensity(const Vector3d &position) const {
+	double n = 0.;
+	for (int i = 0; i < DensityList.size(); i++)
+		n += DensityList[i]->getNucleonDensity(position);
+	return n;
+}
+
 } //namespace crpropa
 
