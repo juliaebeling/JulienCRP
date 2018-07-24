@@ -39,6 +39,7 @@ public:
 	double getHIDensity(const Vector3d &position) const;
 	double getHIIDensity(const Vector3d &position) const;
 	double getH2Density(const Vector3d &position) const;
+	double getNucleonDensity(const Vector3d &position) const;
 
 	void setisforHI(bool HI);
 	void setisforHII(bool HII);

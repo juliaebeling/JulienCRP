@@ -153,6 +153,28 @@ double Pohl08::getDensity(const Vector3d &position) const {
 }
 
 
+double Pohl08::getNucleonDensity(const Vector3d &position) const {
+	double n=0;
+	if(isforHI)
+		n+= Pohl08::getHIDensity(position);
+	if(isforH2)
+		n+= 2*Pohl08::getH2Density(position);
+		
+	//check if any density is activ and give warning if not
+	bool anyDensityActive = isforHI||isforH2;
+
+	if(anyDensityActive == false){
+		KISS_LOG_WARNING
+			<< "\n tryed to get nucleon-density although all density-types are deaktivated \n"
+			<< "density-module: Ferriere\n"
+			<< "returned 0 density\n"
+			<< "please use constant Density with 0 \n";
+	}	
+	
+	return n;
+}
+
+
 bool Pohl08::getisforHI() {
 	return isforHI;
 }

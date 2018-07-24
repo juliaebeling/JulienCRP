@@ -34,10 +34,12 @@ public:
 	
 	void loadGridHI();
 	void loadGridH2();
+	
 	double getDensity(const Vector3d &position) const;
 	double getH2Density(const Vector3d &position) const;
 	double getHIDensity(const Vector3d &position) const;
-	
+	double getNucleonDensity(const Vector3d &position) const;
+
 	bool getisforHI();
 	bool getisforHII();
 	bool getisforH2();

@@ -321,6 +321,33 @@ double Ferriere::getDensity(const Vector3d &position) const{
 	return n;
 }
 
+double Ferriere::getNucleonDensity(const Vector3d &position) const{ 
+
+	double n=0; 
+	if(isforHI){
+		n += getHIDensity(position);
+	}
+	if(isforHII){
+		n+=getHIIDensity(position);
+	}
+	if(isforH2){
+		n+= 2*getH2Density(position);
+	}
+	
+	//check if any density is activ and give warning if not
+	bool anyDensityActive = isforHI||isforHII||isforH2;
+
+	if(anyDensityActive == false){
+		KISS_LOG_WARNING
+			<< "\n tryed to get nucleon-density although all density-types are deaktivated \n"
+			<< "density-module: Ferriere\n"
+			<< "returned 0 density\n"
+			<< "please use constant Density with 0 \n";
+	}
+	
+	return n;
+}
+
 
 void Ferriere::setisforHI(bool HI){
 

@@ -62,6 +62,36 @@ double Massdistribution::getDensity(const Vector3d &position) const{
 	return n;
 }
 
+double Massdistribution::getNucleonDensity(const Vector3d &position) const{
+	
+	double n=0.;
+	bool noOptionSelected = true;
+	
+	if(isforHI){
+		n = HIDist->getHIDensity(position);
+		noOptionSelected = false;
+	}
+	if(isforHII){
+		n += this->HIIDist->getHIIDensity(position);
+		noOptionSelected = false;
+	}
+	if(isforH2){
+		n += 2*this->H2Dist->getH2Density(position);
+		noOptionSelected = false;
+	}
+	
+	// warning if no Option is load in
+	if(noOptionSelected == true){
+		KISS_LOG_WARNING
+			<< "\ntryed to get nucleon-density in Massdistribution without loading any Option in or all components are deaktivated.\n"
+			<< "Returned density of 0 \n"
+			<< "Please load a density in or use a constant density of 0!\n";
+			return 0;
+	}
+	
+	return n;
+}
+
 double Massdistribution::getHIDensity(const Vector3d &position) const {
 	return HIDist->getHIDensity(position);
 }
