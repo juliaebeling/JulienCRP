@@ -4,7 +4,10 @@
 #include <sstream>
 
 namespace crpropa {
-
+Pohl08::Pohl08() {
+	loadGridHI();
+	loadGridH2();
+}
 
 void Pohl08::loadGridHI() {
 	std::ifstream fin("/rest/CRPropa3/share/crpropa/Pohl_HI.txt");

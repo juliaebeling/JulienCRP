@@ -31,7 +31,7 @@ class Pohl08: public Density {
 
 public:
 
-	
+	Pohl08();
 	void loadGridHI();
 	void loadGridH2();
 	

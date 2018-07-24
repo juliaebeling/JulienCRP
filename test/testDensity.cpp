@@ -320,9 +320,6 @@ TEST(testFerriere, SimpleTest) {
 TEST(testPohl,SimpleTest) {
 	
 	Pohl08 n;
-	
-	n.loadGridHI();
-	n.loadGridH2();
 
 	//check type information
 	EXPECT_TRUE(n.getisforHI());

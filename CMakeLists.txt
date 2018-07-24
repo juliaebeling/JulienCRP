@@ -370,7 +370,6 @@ add_library(crpropa SHARED
 	src/magneticField/JF12Field.cpp
 	src/magneticField/MagneticField.cpp
 	src/magneticField/MagneticFieldGrid.cpp
-	src/magneticField/PshirkovField.cpp
 	src/Massdistribution/Nakanishi.cpp
 	src/Massdistribution/Massdistribution.cpp
 	src/Massdistribution/Ferriere07.cpp
