@@ -66,16 +66,39 @@ TEST(testConstantDensity, SimpleTest) {
 	//check if get density returns 0. (should give a error massage in log file)
 	Hges = n.getDensity(p);
 	EXPECT_DOUBLE_EQ(Hges, 0);
+	
+	
+	//check Constructor with one double for all type
+	constantDensity n2(1.);
+	EXPECT_DOUBLE_EQ(n2.getHIDensity(p),1);
+	EXPECT_DOUBLE_EQ(n2.getHIIDensity(p),1);
+	EXPECT_DOUBLE_EQ(n2.getH2Density(p),1);
+	EXPECT_DOUBLE_EQ(n2.getDensity(p),3);
+	
+	
+	//check zero Density
+	constantDensity n3(0.);
+	EXPECT_DOUBLE_EQ(n3.getHIDensity(p),0);
+	EXPECT_DOUBLE_EQ(n3.getHIIDensity(p),0);
+	EXPECT_DOUBLE_EQ(n3.getH2Density(p),0);
+	EXPECT_DOUBLE_EQ(n3.getDensity(p),0);
+	
 }
 
 TEST(testMassdistribution, SimpleTest) {
 	
 	Massdistribution MD;
+	
+	Vector3d p(50*pc, 20*pc, -100*pc);	//random position for testing density 
+	
+	//try to get density without load any option in. Should give Warning in log-File and return density of 0.
+	EXPECT_DOUBLE_EQ(MD.getDensity(p),0);	
+	
 	MD.add(new constantDensity(1,1,1));	//only HI types
 	MD.add(new constantDensity(0,2,0));	//only HII type
 	MD.add(new constantDensity(0,0,3));	//only H2 type
 
-	Vector3d p(50*pc, 20*pc, -100*pc);	//random position for testing density 
+
 	
 	//check get density output
 	double HI = MD.getHIDensity(p);
@@ -91,6 +114,26 @@ TEST(testMassdistribution, SimpleTest) {
 	EXPECT_TRUE(MD.getisforHI());
 	EXPECT_TRUE(MD.getisforHII());
 	EXPECT_TRUE(MD.getisforH2());
+	
+	//check type deaktivate funktion
+	MD.deaktivateHI();
+	EXPECT_FALSE(MD.getisforHI());
+	EXPECT_TRUE(MD.getisforHII());
+	EXPECT_TRUE(MD.getisforH2());
+	
+	MD.deaktivateHII();
+	EXPECT_FALSE(MD.getisforHI());
+	EXPECT_FALSE(MD.getisforHII());
+	EXPECT_TRUE(MD.getisforH2());
+	
+	MD.deaktivateH2();
+	EXPECT_FALSE(MD.getisforHI());
+	EXPECT_FALSE(MD.getisforHII());
+	EXPECT_FALSE(MD.getisforH2());
+	
+	//check density output if all types are deaktivated
+	//should give error message in log-file and return density of 0.
+	EXPECT_DOUBLE_EQ(MD.getDensity(p),0.);
 
 } 
 
@@ -121,11 +164,18 @@ TEST(testCordes, SimpleTest) {
 	
 	double HII = n.getHIIDensity(p);
 	double Hges = n.getDensity(p);
+	double nNucleon = n.getNucleonDensity(p);
 	
-	EXPECT_NEAR(HII, 184500.,1);	// output in m^-3 ; uncertainty of 1e-6 cm^-1 
+	EXPECT_NEAR(HII, 184500.,1);	// output in m^-3 ; uncertainty of 1e-6 cm^-3 
 	EXPECT_NEAR(Hges, 184500.,1);	
+	EXPECT_NEAR(nNucleon, 184500,1);
 	p.z=30*pc;			// invariant density for +/- z
 	EXPECT_DOUBLE_EQ(HII,n.getDensity(p)); 
+	
+	//check NaN exception
+	//gives a error massage (in log file) and set denstiy to zero
+	Vector3d p2(NAN);
+	EXPECT_DOUBLE_EQ(n.getHIIDensity(p2),0);
 }
 
 TEST(testNakanishi, SimpleTest) {
@@ -177,6 +227,12 @@ TEST(testNakanishi, SimpleTest) {
 	
 	//check if density output is zero if all density-types are deaktivated (should give warning in log-file)
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);	
+	
+	//check NaN exception
+	//gives a error massage (in log file) and set denstiy to zero
+	Vector3d p2(NAN);
+	EXPECT_DOUBLE_EQ(n.getHIDensity(p2),0);
+	EXPECT_DOUBLE_EQ(n.getH2Density(p2),0);
 }
 
 TEST(testFerriere, SimpleTest) {
@@ -250,6 +306,13 @@ TEST(testFerriere, SimpleTest) {
 	
 	//check if density is set to zero if all types are deaktivated (schould give warning in log-file)
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);
+	
+	//check NaN exception
+	//gives Error massage in logfile for Transformation 
+	Vector3d pNaN(NAN);
+	EXPECT_DOUBLE_EQ(n.getHIDensity(pNaN),0);
+	EXPECT_DOUBLE_EQ(n.getHIIDensity(pNaN),0);
+	EXPECT_DOUBLE_EQ(n.getH2Density(pNaN),0);
 }
 
 TEST(testPohl,SimpleTest) {
@@ -273,6 +336,22 @@ TEST(testPohl,SimpleTest) {
 	EXPECT_DOUBLE_EQ(n.getHIDensity(py),0);
 	EXPECT_DOUBLE_EQ(n.getH2Density(py),0);
 	
+	Vector3d pz(5*kpc,5*kpc,2*kpc);
+	EXPECT_DOUBLE_EQ(n.getHIDensity(pz),0);
+	EXPECT_DOUBLE_EQ(n.getH2Density(pz),0);
+	
+	//check position in Grid
+	Vector3d p(1*kpc,-1*kpc,0.25*kpc);
+	EXPECT_NEAR(n.getHIDensity(p),6745,1);	// uncertaincy of 1e-6 cm^-3
+	EXPECT_NEAR(n.getH2Density(p),23500,1);
+	EXPECT_NEAR(n.getDensity(p),30245,1);
+	
+	//check NaN exception
+	//gives Error massage in logfile for Transformation 
+	Vector3d pNaN(NAN);
+	EXPECT_DOUBLE_EQ(n.getHIDensity(pNaN),0);
+	EXPECT_DOUBLE_EQ(n.getH2Density(pNaN),0);
+	
 	//test set type funktion
 	n.setisforHI(false);
 	EXPECT_FALSE(n.getisforHI());
@@ -285,7 +364,6 @@ TEST(testPohl,SimpleTest) {
 	EXPECT_FALSE(n.getisforH2());
 	
 	//check if density is set to zero when all densties are deaktivated (sould give Warning in log-File)
-	Vector3d p(0.);
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);
 	
 }
