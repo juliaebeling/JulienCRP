@@ -5,8 +5,9 @@
 #include "crpropa/Vector3.h"
 #include "crpropa/Massdistribution/Density.h"
 
-#include <string>
+
 #include <math.h>
+#include <sstream>
 
 #include "kiss/logger.h"
 
@@ -45,6 +46,8 @@ public:
 	
 	void setisforHI(bool HI);
 	void setisforH2(bool H2);
+	
+	std::string getDescription();
 };
 
 } //namespace crpropa

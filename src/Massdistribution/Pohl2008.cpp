@@ -195,4 +195,19 @@ void Pohl08::setisforH2(bool H2) {
 	isforH2=H2;
 }
 
+std::string Pohl08::getDescription() {
+	
+	std::stringstream s;
+	s << "Density modell Pohl 2008: ";
+	s<< "HI component is ";
+	if(isforHI==false)
+		s<< "not ";
+	s<< "activ. HII component is ";
+	if(isforH2==false)
+		s<<"not "; 
+	s<<"activ. Pohl has no HII component.";
+	
+	return s.str();
+}
+
 } //namespace

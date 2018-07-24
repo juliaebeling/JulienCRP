@@ -379,4 +379,22 @@ bool Ferriere::getisforH2(){
 	return isforH2;
 }
 
+std::string Ferriere::getDescription() {
+	
+	std::stringstream s;
+	s << "Density modell Ferrie 2007: ";
+	s<< "HI component is ";
+	if(!isforHI)
+		s<< "not ";
+	s<< "activ. HII component is ";
+	if(!isforHII)
+		s<< "not ";
+	s<<"activ. H2 component is ";
+	if(!isforH2)
+		s<<"not "; 
+	s<<"activ.";
+	return s.str();
+}
+
+
 } //namespace 

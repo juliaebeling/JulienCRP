@@ -6,6 +6,7 @@
 #include "crpropa/Units.h"
 
 #include <math.h>
+#include <sstream>
 
 #include "kiss/logger.h"
 
@@ -17,15 +18,15 @@ namespace crpropa {
  * Here in model Ferriere 2007
  * seperated in 2 regions (inner, outer). The border is for R=3 kpc in galactocentric radius. 
  * model is discribed in 
-Außen: ApJ, 497, 759
-Innen:	arxiv:	astro-ph/0702532
+outer: ApJ, 497, 759
+inner:	arxiv:	astro-ph/0702532
 */
 
 class Ferriere: public Density {
 
 private:
 
-	bool isforHI = true;		// standard for all kind of distribution
+	bool isforHI = true;		// standard for all types of distribution
 	bool isforHII = true;
 	bool isforH2 = true;
 	double Rsun = 8500*pc;	
@@ -48,6 +49,8 @@ public:
 	bool getisforHI();
 	bool getisforHII();
 	bool getisforH2();
+	
+	std::string getDescription();
 	
 };
 

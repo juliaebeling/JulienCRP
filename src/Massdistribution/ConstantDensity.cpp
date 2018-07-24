@@ -144,4 +144,21 @@ void constantDensity::setH2(double densitynumber) {
 	setH2(isforH2, densitynumber);	
 }
 
+std::string constantDensity::getDescription() {
+	
+	std::stringstream s;
+	s << "constant Density:";
+	s<< "HI component is ";
+	if(!isforHI)
+		s<< "not ";
+	s<< "activ and has a density of " << HIdensitynumber/ccm << " cm^-3" << "      HII component is ";
+	if(!isforHII)
+		s<< "not ";
+	s<<"activ and  has a density of " << HIIdensitynumber/ccm<<" cm^-3" <<  "      H2 component is ";
+	if(!isforH2)
+		s<<"not "; 
+	s<<"activ and  has a density of " << H2densitynumber/ccm << " cm^-3";
+	return s.str();
+}
+
 }//namespace 

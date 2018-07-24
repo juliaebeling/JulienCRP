@@ -7,7 +7,7 @@
 #include "crpropa/Grid.h"
 #include "crpropa/GridTools.h"
 
-#include <string>
+#include <sstream>
 
 #include "kiss/logger.h"
 
@@ -46,6 +46,8 @@ public:
 	
 	void setisforHI(bool HI);
 	void setisforH2(bool H2);
+	
+	std::string getDescription();
 
 	
 };

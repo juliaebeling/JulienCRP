@@ -6,6 +6,7 @@
 #include "crpropa/Massdistribution/Density.h"
 
 #include <math.h>
+#include <sstream>
 
 #include "kiss/logger.h"
 
@@ -52,6 +53,8 @@ public:
 	void setH2(bool activate, double densitynumber);
 	void setH2(bool activate);
 	void setH2(double densitynumber);
+	
+	std::string getDescription();
 };
 
 } //namespace

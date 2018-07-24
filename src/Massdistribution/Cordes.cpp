@@ -54,4 +54,12 @@ bool Cordes::getisforHII() {
 bool Cordes::getisforH2() {
 	return isforH2;
 }
+
+std::string Cordes::getDescription() {
+	
+	std::stringstream s;
+	s << "Density Cordes include HII component";
+	return s.str();
 }
+
+}//namespace

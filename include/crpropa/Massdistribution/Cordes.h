@@ -6,6 +6,7 @@
 #include "crpropa/Units.h"
 
 #include <math.h>
+#include <sstream>
 
 #include "kiss/logger.h"
 
@@ -32,6 +33,8 @@ public:
 	bool getisforHI();
 	bool getisforHII();
 	bool getisforH2();
+	
+	std::string getDescription();
 	
 };
 

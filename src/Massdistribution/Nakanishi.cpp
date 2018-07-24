@@ -157,4 +157,20 @@ void Nakanishi::setisforH2(bool H2) {
 	isforH2 = H2;
 }
 
+std::string Nakanishi::getDescription() {
+	
+	std::stringstream s;
+	s << "Density modell Nakanishi: ";
+	s<< "HI component is ";
+	if(isforHI==false)
+		s<< "not ";
+	s<< "activ. H2 component is ";
+	if(isforH2==false)
+		s<<"not "; 
+	s<<"activ. Nakanishi has no HII component.";
+	
+	return s.str();
+}
+
+
 } //namespace crpropa
