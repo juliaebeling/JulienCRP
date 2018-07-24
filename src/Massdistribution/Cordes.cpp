@@ -38,6 +38,11 @@ double Cordes::getDensity(const Vector3d &position) const {
 	return Cordes::getHIIDensity(position);
 }
 
+double Cordes::getNucleonDensity(const Vector3d &position) const {
+	
+	return getHIIDensity(position);
+}
+
 bool Cordes::getisforHI() {
 	return isforHI;
 }
