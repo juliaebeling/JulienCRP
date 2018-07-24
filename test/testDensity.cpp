@@ -16,14 +16,11 @@ TEST(testConstantDensity, SimpleTest) {
 	//test constant Density in all types and in total density (output)
 	constantDensity n(2/ccm,3/ccm, 2/ccm);
 	Vector3d p(1*pc,2*pc,1*kpc); 	// random position for testing density
-	double HI = n.getHIDensity(p);
-	double HII = n.getHIIDensity(p);
-	double H2 = n.getH2Density(p);
-	double Hges = n.getDensity(p);
-	EXPECT_DOUBLE_EQ(HI, 2e6);	// density output in m^-3
-	EXPECT_DOUBLE_EQ(HII, 3e6);
-	EXPECT_DOUBLE_EQ(H2, 2e6);
-	EXPECT_DOUBLE_EQ(Hges, 7e6);	// total density 2+3+2 = 7 (/ccm)
+	EXPECT_DOUBLE_EQ(n.getHIDensity(p), 2e6);	// density output in m^-3
+	EXPECT_DOUBLE_EQ(n.getHIIDensity(p), 3e6);
+	EXPECT_DOUBLE_EQ( n.getH2Density(p), 2e6);
+	EXPECT_DOUBLE_EQ(n.getDensity(p), 7e6);		// total density 2+3+2 = 7 (/ccm)
+	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),9e6);	// nucleon density 2+3+2*2 = 9 (/ccm) factor 2 for molecular hydrogen
 	
 	//test set/get function for used type
 	
@@ -40,14 +37,11 @@ TEST(testConstantDensity, SimpleTest) {
 	n.setHII(500.);
 	n.setH2(500.);
 	
-	HI = n.getHIDensity(p);		
-	HII = n.getHIIDensity(p);
-	H2 = n.getH2Density(p);
 	
 	//check if output is changed too 500 in types and is 0 (all deaktivated) for Hges
-	EXPECT_DOUBLE_EQ(HI, 500);	
-	EXPECT_DOUBLE_EQ(HII, 500);
-	EXPECT_DOUBLE_EQ(H2, 500);
+	EXPECT_DOUBLE_EQ(n.getHIDensity(p), 500);	
+	EXPECT_DOUBLE_EQ(n.getHIIDensity(p), 500);
+	EXPECT_DOUBLE_EQ(n.getH2Density(p), 500);
 	
 	//set all type-use to false
 	n.setHI(false);
@@ -64,8 +58,8 @@ TEST(testConstantDensity, SimpleTest) {
 	
 	//get type density is independent from type activation, get density is not independent 
 	//check if get density returns 0. (should give a error massage in log file)
-	Hges = n.getDensity(p);
-	EXPECT_DOUBLE_EQ(Hges, 0);
+	EXPECT_DOUBLE_EQ(n.getDensity(p), 0);
+	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
 	
 	
 	//check Constructor with one double for all type
@@ -74,6 +68,7 @@ TEST(testConstantDensity, SimpleTest) {
 	EXPECT_DOUBLE_EQ(n2.getHIIDensity(p),1);
 	EXPECT_DOUBLE_EQ(n2.getH2Density(p),1);
 	EXPECT_DOUBLE_EQ(n2.getDensity(p),3);
+	EXPECT_DOUBLE_EQ(n2.getNucleonDensity(p),4);	// 1 + 1 + 1*2 = 4	factor 2 for molecular hydrogen
 	
 	
 	//check zero Density
@@ -82,6 +77,7 @@ TEST(testConstantDensity, SimpleTest) {
 	EXPECT_DOUBLE_EQ(n3.getHIIDensity(p),0);
 	EXPECT_DOUBLE_EQ(n3.getH2Density(p),0);
 	EXPECT_DOUBLE_EQ(n3.getDensity(p),0);
+	EXPECT_DOUBLE_EQ(n3.getNucleonDensity(p),0);
 	
 }
 
@@ -101,14 +97,11 @@ TEST(testMassdistribution, SimpleTest) {
 
 	
 	//check get density output
-	double HI = MD.getHIDensity(p);
-	double HII= MD.getHIIDensity(p);
-	double H2 = MD.getH2Density(p);
-	double n = MD.getDensity(p);
-	EXPECT_DOUBLE_EQ(HI,1);
-	EXPECT_DOUBLE_EQ(HII,2);
-	EXPECT_DOUBLE_EQ(H2,3);
-	EXPECT_DOUBLE_EQ(n,6);	//total density 2+2+3
+	EXPECT_DOUBLE_EQ(MD.getHIDensity(p),1);
+	EXPECT_DOUBLE_EQ(MD.getHIIDensity(p),2);
+	EXPECT_DOUBLE_EQ(MD.getH2Density(p),3);
+	EXPECT_DOUBLE_EQ(MD.getDensity(p),6);	//total density 2+2+3
+	EXPECT_DOUBLE_EQ(MD.getNucleonDensity(p),9);	// nucleon density = 2 + 2 + 2*3  factor 2 for molecular hydrogen
 	
 	//check get function for type 
 	EXPECT_TRUE(MD.getisforHI());
@@ -134,6 +127,7 @@ TEST(testMassdistribution, SimpleTest) {
 	//check density output if all types are deaktivated
 	//should give error message in log-file and return density of 0.
 	EXPECT_DOUBLE_EQ(MD.getDensity(p),0.);
+	EXPECT_DOUBLE_EQ(MD.getNucleonDensity(p),0.);
 
 } 
 
@@ -148,6 +142,7 @@ TEST(testMassdistributionSuperposition, SimpleTest) {
 	EXPECT_DOUBLE_EQ(MS.getHIIDensity(p),4);
 	EXPECT_DOUBLE_EQ(MS.getH2Density(p),3);
 	EXPECT_DOUBLE_EQ(MS.getDensity(p),10);	//sum of sums
+	EXPECT_DOUBLE_EQ(MS.getNucleonDensity(p),13); 	// 3+4+2*3 factor 2 for molecular hydrogen
 	
 }
 
@@ -162,15 +157,11 @@ TEST(testCordes, SimpleTest) {
 
 	Vector3d p(3.1*kpc,2.9*kpc,-30*pc);	//position for testing density	
 	
-	double HII = n.getHIIDensity(p);
-	double Hges = n.getDensity(p);
-	double nNucleon = n.getNucleonDensity(p);
-	
-	EXPECT_NEAR(HII, 184500.,1);	// output in m^-3 ; uncertainty of 1e-6 cm^-3 
-	EXPECT_NEAR(Hges, 184500.,1);	
-	EXPECT_NEAR(nNucleon, 184500,1);
+	EXPECT_NEAR(n.getHIIDensity(p), 184500.,1);	// output in m^-3 ; uncertainty of 1e-6 cm^-3 
+	EXPECT_NEAR(n.getDensity(p), 184500.,1);	
+	EXPECT_NEAR(n.getNucleonDensity(p), 184500,1);	// only HII component -> no differenz between density and nucleon density
 	p.z=30*pc;			// invariant density for +/- z
-	EXPECT_DOUBLE_EQ(HII,n.getDensity(p)); 
+	EXPECT_NEAR(n.getDensity(p),184500,1); 
 	
 	//check NaN exception
 	//gives a error massage (in log file) and set denstiy to zero
@@ -193,15 +184,16 @@ TEST(testNakanishi, SimpleTest) {
 	EXPECT_NEAR(n.getHIPlanedensity(p),162597,1);	//uncertaincy of 1e-6 cm^-3 
 	EXPECT_NEAR(n.getHIScaleheight(p),0.3109*kpc,0.1*pc); 
 	EXPECT_NEAR(n.getHIDensity(p),914,1); 	//uncertainc 1e-6 cm^-3 
+
 	
-	//testing HII compontent
+	//testing H2 compontent
 	EXPECT_NEAR(n.getH2Planedensity(p),741999,1); //uncertaincy of 1e-6 cm^-3
 	EXPECT_NEAR(n.getH2Scaleheight(p),88.2*pc,0.1*pc);
 	EXPECT_NEAR(n.getH2Density(p),0,1);
 	
 	//testing total Density
 	EXPECT_NEAR(n.getDensity(p),914,2); //double uncertaincy for both type á 1cm^-3
-	
+	EXPECT_NEAR(n.getNucleonDensity(p),914,2);	// 914 + 0*2	factor 2 for molecular hydrogen	
 	
 	
 	p = Vector3d(50*pc,100*pc,10*pc);	// second position for testing density
@@ -216,6 +208,10 @@ TEST(testNakanishi, SimpleTest) {
 	EXPECT_NEAR(n.getH2Scaleheight(p),57.2*pc,0.1*pc);
 	EXPECT_NEAR(n.getH2Density(p),10335137,1);
 	
+	//testing total Density
+	EXPECT_NEAR(n.getDensity(p),10876004,2);
+	EXPECT_NEAR(n.getNucleonDensity(p),21211141,2);	// factor 2 in molecular hydrogen
+	
 	//test set type function
 	n.setisforHI(false);
 	EXPECT_FALSE(n.getisforHI());
@@ -227,6 +223,7 @@ TEST(testNakanishi, SimpleTest) {
 	
 	//check if density output is zero if all density-types are deaktivated (should give warning in log-file)
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);	
+	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
 	
 	//check NaN exception
 	//gives a error massage (in log file) and set denstiy to zero
@@ -266,12 +263,14 @@ TEST(testFerriere, SimpleTest) {
 	EXPECT_NEAR(n.getH2Density(p),35484825,1); 
 	EXPECT_NEAR(n.getHIIDensity(p),5570335,1);	
 	EXPECT_NEAR(n.getDensity(p),47292883,1);
+	EXPECT_NEAR(n.getNucleonDensity(p),82777708,1);		//factor 2 in molecular hydrogen
 	
 	Vector3d p2(500*pc,900*pc,35*pc);	//testing position in region of the DISK
 	EXPECT_NEAR(n.getHIIDensity(p2),48190,1);
 	EXPECT_NEAR(n.getHIDensity(p2),5,1);
 	EXPECT_NEAR(n.getH2Density(p2),0,1);
 	EXPECT_NEAR(n.getDensity(p2),48195,1);
+	EXPECT_NEAR(n.getNucleonDensity(p2),48195,1);	// no H2 component -> no differenz between density and nucleon-density
 	
 	//testing the outer region R>3kpc
 	
@@ -280,12 +279,14 @@ TEST(testFerriere, SimpleTest) {
 	EXPECT_NEAR(n.getHIIDensity(p3),66495 ,1);
 	EXPECT_NEAR(n.getH2Density(p3),2492685,1);
 	EXPECT_NEAR(n.getDensity(p3),3099787,1);
+	EXPECT_NEAR(n.getNucleonDensity(p3), 5592472,1);	
 	
 	Vector3d p4(10*kpc,2*kpc,50*pc);	//testing position with R > R_sun
 	EXPECT_NEAR(n.getHIDensity(p4),431294,1);
 	EXPECT_NEAR(n.getHIIDensity(p4),22109,1);
 	EXPECT_NEAR(n.getH2Density(p4),54099,1);
 	EXPECT_NEAR(n.getDensity(p4),507502,1);
+	EXPECT_NEAR(n.getNucleonDensity(p4),561601,1);
 	
 	//test get/set type funktion
 	
@@ -306,6 +307,7 @@ TEST(testFerriere, SimpleTest) {
 	
 	//check if density is set to zero if all types are deaktivated (schould give warning in log-file)
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);
+	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
 	
 	//check NaN exception
 	//gives Error massage in logfile for Transformation 
@@ -345,6 +347,7 @@ TEST(testPohl,SimpleTest) {
 	EXPECT_NEAR(n.getHIDensity(p),6745,1);	// uncertaincy of 1e-6 cm^-3
 	EXPECT_NEAR(n.getH2Density(p),23500,1);
 	EXPECT_NEAR(n.getDensity(p),30245,1);
+	EXPECT_NEAR(n.getNucleonDensity(p),53745,1);
 	
 	//check NaN exception
 	//gives Error massage in logfile for Transformation 
@@ -365,6 +368,7 @@ TEST(testPohl,SimpleTest) {
 	
 	//check if density is set to zero when all densties are deaktivated (sould give Warning in log-File)
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);
+	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
 	
 }
 
