@@ -31,13 +31,13 @@ Vector3d Ferriere::CMZTrafo(const Vector3d &position) const {
 
 Vector3d Ferriere::DISKTrafo(const Vector3d &position) const { 
 
-	double alphaD = 13.5/180.*M_PI;
+	double alphaD = 13.5/180.*M_PI;	// rotation arround x-axis
 	double sinAd = sin(alphaD);
 	double cosAd = cos(alphaD);
-	double betaD = 20./180.*M_PI;
+	double betaD = 20./180.*M_PI; // rotation arround y'-axis
 	double sinBd = sin(betaD);
 	double cosBd = cos(betaD);
-	double TettaD = 48.5/180.*M_PI;
+	double TettaD = 48.5/180.*M_PI; // rotation arround x"-axis
 	double sinTd = sin(TettaD);
 	double cosTd = cos(TettaD);
 	
@@ -78,25 +78,25 @@ double Ferriere::getHIDensity(const Vector3d &position) const {
 	double n = 0;
 	double R = sqrt(pow(position.x,2)+pow(position.y,2));
 	
-	bool innen = R<3*kpc;
-	bool aussen = !innen;
+	bool inner = R<3*kpc;
+	bool outer = !inner;	// needed for error message
 	
-	if(innen == true) 
+	if(inner == true) 
 	{
-		double nCMZ = 0;	//Center
+		double nCMZ = 0;	//center
 		
-		Vector3d pos = CMZTrafo(position);	//Koordinaten Trafo
-		double x = pos.x/pc;
+		Vector3d pos = CMZTrafo(position);	//coordinat trafo
+		double x = pos.x/pc;	// all units in pc
 		double y = pos.y/pc;
 		double z = pos.z/pc;
 		
 		double A = sqrt(pow(x,2)+pow(2.5*y,2));
 		nCMZ = 8.8*exp(-pow((A-125.)/137,4))*exp(-pow(z/54.,2));
 		
-		double nDisk = 0;		//Disk
+		double nDisk = 0;		//disk
 		
 		pos = DISKTrafo(position);	//Koordinaten Trafo
-		x = pos.x/pc;
+		x = pos.x/pc;	// all units in pc
 		y = pos.y/pc;
 		z = pos.z/pc;
 		
@@ -109,7 +109,7 @@ double Ferriere::getHIDensity(const Vector3d &position) const {
 		
 		
 	}
-	else{ //AUßEN
+	else{ // outer region
 
 		double z = position.z/pc;	
 		double a;
@@ -121,14 +121,14 @@ double Ferriere::getHIDensity(const Vector3d &position) const {
 		}
 		
 		
-		double nCold =0;		//cold HI
+		double nCold =0;	//cold HI
 		nCold += 0.859*exp(-pow(z/(127*a),2));
 		nCold += 0.047*exp(-pow(z/(318*a),2));
 		nCold += 0.094*exp(-fabs(z)/(403*a));
 		nCold *= 0.340/(pow(a,2));
 		
 		
-		double nWarm =0;		//warm HI
+		double nWarm =0;	//warm HI
 		nWarm += (1.745 - 1.289/a)*exp(-pow(z/(127*a),2));
 		nWarm += (0.473 - 0.070/a)*exp(-pow(z/(318*a),2));
 		nWarm += (0.283 - 0.142/a)*exp(-fabs(z)/(403*a));
@@ -147,8 +147,8 @@ double Ferriere::getHIDensity(const Vector3d &position) const {
 			<< "postion = " << position << "\n"
 			<< "density-model: Ferriere 2007 \n"
 			<< "density-type: HI (atomic)\n"
-			<< "region innen = " << innen << "\n"
-			<< "region außen = " << aussen << "\n"
+			<< "region inner = " << inner << "\n"
+			<< "region outer = " << outer << "\n"
 			<< "density is set to 0. \n";
 			return 0.;
 	}
@@ -160,10 +160,10 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 
 	double n = 0;
 	double R = sqrt(pow(position.x,2)+pow(position.y, 2));
-	bool innen = R< 3*kpc;
-	bool aussen = !innen;
+	bool inner = R< 3*kpc;
+	bool outer = !inner;	// needed for error message
 	
-	if(innen == true){   //innen
+	if(inner == true){   //inner
 	
 	double x = position.x/pc;
 	double y = position.y/pc;
@@ -187,7 +187,7 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 	double alphaVH = 21./180*M_PI;		//angel for very hot IM in radiant 
 	double cosA = cos(alphaVH);
 	double sinA = sin(alphaVH);
-	double etta = y*cosA+z*sinA;		//transformation for VHIM
+	double etta = y*cosA+z*sinA;		// coordinate transformation for VHIM along major axis
 	double chi = -y*sinA+z*cosA;
 	
 	nVHIM = 0.29*exp(-((pow(x,2)+pow(etta,2))/pow(162,2)+pow(chi/90,2)));
@@ -195,13 +195,13 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 	n = nWIM + nVHIM;
 	
 	}
-	else {		//außen
+	else {		// outer region
 		
-		double z = position.z/pc;
+		double z = position.z;
 		
 		double nWarm = 0;
-		nWarm += 0.0237*exp(-(pow(R,2)-pow(Rsun,2))/pow(37*kpc,2))*exp(-fabs(z)/1000);
-		nWarm += 0.0013*exp(-(pow(R-4*kpc,2)-pow(Rsun-4*kpc,2))/pow(2*kpc,2))*exp(-fabs(z)/150);
+		nWarm += 0.0237*exp(-(pow(R,2)-pow(Rsun,2))/pow(37*kpc,2))*exp(-fabs(z)/(1*kpc));
+		nWarm += 0.0013*exp(-(pow(R-4*kpc,2)-pow(Rsun-4*kpc,2))/pow(2*kpc,2))*exp(-fabs(z)/(150*pc));
 		
 		
 		
@@ -210,7 +210,7 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 		nHot += 0.12*exp(-(R-Rsun)/(4.9*kpc));
 		nHot += 0.88*exp(-(pow(R-4.5*kpc,2)-pow(Rsun-4.5*kpc,2))/pow(2.9*kpc,2));
 		nHot *= pow(R/Rsun, -1.65);
-		nHot *= exp(-fabs(z)/(1500*pow(R/Rsun,1.65)));
+		nHot *= exp(-fabs(z)/((1500*pc)*pow(R/Rsun,1.65)));
 		nHot *= 4.8e-4;
 		
 		n= nWarm + nHot;
@@ -226,8 +226,8 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 			<< "postion = " << position << "\n"
 			<< "density-model: Ferriere 2007 \n"
 			<< "density-type: HII (ionised) \n"
-			<< "region innen = " << innen << "\n"
-			<< "region außen = " << aussen << "\n"
+			<< "region innen = " << inner << "\n"
+			<< "region outer = " << outer << "\n"
 			<< "density is set to 0. \n";
 			return 0.;
 	}
@@ -240,31 +240,31 @@ double Ferriere::getH2Density(const Vector3d &position) const{
 
 	double n=0;
 	double R=sqrt(pow(position.x,2)+pow(position.y,2));
-	bool innen = R<3*kpc;	
-	bool aussen = !innen;
+	bool inner = R<3*kpc;	
+	bool outer = !inner;	// needed for error message
 	
-	if(innen == true) {		
+	if(inner == true) {		
 	
 		double nCMZ = 0;
 		double nDISK = 0;
 		
-		Vector3d pos =CMZTrafo(position); //Koord Trafo
-		double x = pos.x/pc;
+		Vector3d pos =CMZTrafo(position); // coord trafo for CMZ
+		double x = pos.x/pc;	// all units in pc
 		double y = pos.y/pc;
 		double z = pos.z/pc;
 		
-		double A = sqrt(pow(x,2)+pow(2.5*y,2));
+		double A = sqrt(pow(x,2)+pow(2.5*y,2));	// ellipticity
 		nCMZ = exp(-pow((A-125.)/137.,4))*exp(-pow(z/18.,2));
-		nCMZ *= 150;		//Density at Center for scale
+		nCMZ *= 150;		// density at Center for scale
 		
-		pos =DISKTrafo(position);
+		pos = DISKTrafo(position);	// coord trafo for disk
 		x=pos.x/pc;
 		y=pos.y/pc;
 		z=pos.z/pc;
 		
 		A = sqrt(pow(x,2)+pow(3.1*y,2));
 		nDISK = exp(-pow((A-1200)/438,4))*exp(-pow(z/42,2));
-		nDISK *= 4.8;		//density at center for scale
+		nDISK *= 4.8;		//density at center for scale [cm^-3]
 		
 		n = nCMZ + nDISK;
 	}	
@@ -285,8 +285,8 @@ double Ferriere::getH2Density(const Vector3d &position) const{
 			<< "postion = " << position << "\n"
 			<< "density-model: Ferriere 2007 \n"
 			<< "density-type: H2 (molecular)\n"
-			<< "region innen = " << innen << "\n"
-			<< "region außen = " << aussen << "\n"
+			<< "region innen = " << inner << "\n"
+			<< "region außen = " << outer << "\n"
 			<< "density is set to 0. \n";
 			return 0;
 	}

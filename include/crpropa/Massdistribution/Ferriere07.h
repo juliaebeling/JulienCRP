@@ -33,8 +33,8 @@ private:
 	
 
 public:
-	Vector3d CMZTrafo(const Vector3d &position) const; 
-	Vector3d DISKTrafo(const Vector3d &position) const;
+	Vector3d CMZTrafo(const Vector3d &position) const; // coordinat trafo for the CMZ Region
+	Vector3d DISKTrafo(const Vector3d &position) const; // coordinat trafo for the region of the disk in galactic center
 
 	double getDensity(const Vector3d &position) const;
 	double getHIDensity(const Vector3d &position) const;
