@@ -9,14 +9,11 @@ double Cordes::getHIIDensity(const Vector3d &position) const {
 	
 	double n=0;
 	
-	double x=position.x/kpc;
-	double y=position.y/kpc;
-	double z=position.z/kpc;
+	double z=position.z;
+	double R = sqrt(pow(position.x,2)+pow(position.y,2));	//radius in galactic disk
 	
-	double R = sqrt(pow(x,2)+pow(y,2));	//radius in galactic disk
-	
-	n += 0.025*exp(-fabs(z)/1)*exp(-pow(R/20,2));	//galactocentric component
-	n += 0.2*exp(-fabs(z)/0.15)*exp(-pow((R-4)/2,2));	//anular component
+	n += 0.025*exp(-fabs(z/kpc)/1)*exp(-pow(R/20/kpc,2));	//galactocentric component
+	n += 0.2*exp(-fabs(z/kpc)/0.15)*exp(-pow((R-4*kpc)/2/kpc,2));	//anular component
 
 	// check if density is NAN
 	// return 0 instead
