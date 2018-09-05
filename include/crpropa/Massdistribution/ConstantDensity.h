@@ -20,7 +20,8 @@ namespace crpropa {
 class constantDensity: public Density {
 
 private:
-	double HIdensitynumber  = 0/ccm;
+	// default mode: all density types set to 0 and no activ component
+	double HIdensitynumber  = 0/ccm;	
 	double HIIdensitynumber = 0/ccm;
 	double H2densitynumber  = 0/ccm;
 	

@@ -3,6 +3,8 @@
 namespace crpropa{
 
 constantDensity::constantDensity(double HI, double HII, double H2) {
+
+	//set all types activ which are not equal 0 and change densitynumber
 	if(HI!=0)
 		setHI(true, HI);
 	if(HII!=0)
@@ -12,11 +14,11 @@ constantDensity::constantDensity(double HI, double HII, double H2) {
 }
 
 constantDensity::constantDensity(double densitynumber) {
-	if(densitynumber == 0)
+	if(densitynumber == 0)	// total density is 0 and "pseudo" activ component (default) is HI
 	{
 		setHI(true,0);
 	}
-	else
+	else	// all types set to same density
 	{
 		setHI(true,densitynumber);
 		setHII(true,densitynumber);
