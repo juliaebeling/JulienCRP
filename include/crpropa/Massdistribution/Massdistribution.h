@@ -35,7 +35,7 @@ bool H2isload=false;
 
 
 public:
-	Massdistribution();
+
 	double getDensity(const Vector3d &position) const;
 	double getHIDensity(const Vector3d &position) const;
 	double getHIIDensity(const Vector3d &position) const;
