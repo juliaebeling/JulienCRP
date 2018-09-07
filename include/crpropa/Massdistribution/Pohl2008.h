@@ -16,7 +16,7 @@ namespace crpropa {
 
 /**
 	@class Pohl08 
-	@brief Grid for H2 density based on arxiv:0712.4264 Fits avalibal at http://www.app.physik.uni-potsdam.de/gas.html 
+	@brief Grid for H2 density based on arxiv:0712.4264 Fits-file avalibal at http://www.app.physik.uni-potsdam.de/gas.html 
 	Grid for HI density based on private communication with Martin Pohl.
 */
 

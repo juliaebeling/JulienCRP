@@ -16,7 +16,7 @@ void Pohl08::loadGridHI() {
 		ss << "load Pohl Grid: Pohl_HI.txt not found";
 		throw std::runtime_error(ss.str());
 	}
-	//skp header lines
+	//skip header lines
 	while (fin.peek() == '#')
 		fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	
@@ -42,7 +42,7 @@ void Pohl08::loadGridH2() {
 		ss << "load Pohl Grid: Pohl_H2.txt not found";
 		throw std::runtime_error(ss.str());
 	}
-	//skp header lines
+	//skip header lines
 	while (fin.peek() == '#')
 		fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	
