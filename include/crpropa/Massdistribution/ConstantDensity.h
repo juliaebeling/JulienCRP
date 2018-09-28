@@ -14,24 +14,24 @@
 namespace crpropa {
 
 /*
-@class constantDensity 
-@brief Density module for constant densitys in HI, HII and H2 component. 
+@class ConstantDensity 
+@brief Density module for Constant densitys in HI, HII and H2 component. 
 */
-class constantDensity: public Density {
+class ConstantDensity: public Density {
 
 private:
 	// default mode: all density types set to 0 and no activ component
-	double HIdensitynumber  = 0/ccm;	
-	double HIIdensitynumber = 0/ccm;
-	double H2densitynumber  = 0/ccm;
+	double HIdensitynumber  = 0;	
+	double HIIdensitynumber = 0;
+	double H2densitynumber  = 0;
 	
-	bool isforHI = false;
-	bool isforHII = false;
-	bool isforH2 = false;
+	bool isHI = false;
+	bool isHII = false;
+	bool isH2 = false;
 
 public:
-	constantDensity(double HI, double HII, double H2);
-	constantDensity(double densitynumber);
+	ConstantDensity(double HI, double HII, double H2);
+	
 	double getDensity(const Vector3d &position) const;
 	
 	double getHIDensity(const Vector3d &position) const;

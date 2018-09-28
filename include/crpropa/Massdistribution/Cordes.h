@@ -20,7 +20,8 @@ namespace crpropa {
 class Cordes: public Density {
 
 private:
-	bool isforHI = false;	//model typ DO NOT CHANGE!
+	// DO NOT CHANGE model typ!
+	bool isforHI = false;	 
 	bool isforHII = true;
 	bool isforH2 = false;	
 

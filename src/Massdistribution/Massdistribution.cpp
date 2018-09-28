@@ -1,11 +1,12 @@
-#include "crpropa/Massdistribution/Massdistribution.h"
+#include "crpropa/CustomDensity/CustomDensity.h"
 
 
 namespace crpropa {
 
-void Massdistribution::add(ref_ptr<Density> dens) { 
-			
-	bool HI = dens->getisforHI();	// check which density tpye is activated in loading density. Just use this part!
+void CustomDensity::add(ref_ptr<Density> dens) { 
+	
+	// check which density tpye is activated in loading density. Just use this part!		
+	bool HI = dens->getisforHI();	
 	bool HII= dens->getisforHII();
 	bool H2 = dens->getisforH2();	
 	
@@ -13,7 +14,7 @@ void Massdistribution::add(ref_ptr<Density> dens) {
 	
 	if(nothingToLoad == true){
 		KISS_LOG_WARNING
-		<<"\n tryed to add density to Massdistribution wether no density type is activated. \n  nothing is load!\n";
+		<<"\n tryed to add density to CustomDensity although no density type is activated. \n  nothing is loaded!\n";
 		return ;
 	}
 	
@@ -31,7 +32,7 @@ void Massdistribution::add(ref_ptr<Density> dens) {
 	
 	if(H2 == true){
 		H2Dist = dens;
-		isforH2 = H2;
+		isforH2 = true;
 		H2isload = true;
 	}
 	
@@ -40,7 +41,7 @@ void Massdistribution::add(ref_ptr<Density> dens) {
 }
 
 
-double Massdistribution::getDensity(const Vector3d &position) const{
+double CustomDensity::getDensity(const Vector3d &position) const{
 	
 	double n=0.;
 
@@ -49,39 +50,36 @@ double Massdistribution::getDensity(const Vector3d &position) const{
 	if(nothingLoadIn)
 	{	
 		KISS_LOG_WARNING
-		<<"\n tryed to get density in Massdistribution allthough no densitytype is load in \n"
-		<<" density return is 0 \n";
+		<< "\n called getDensity in CustomDensity alltough no option is loaded in. \n"
+			<< "returned 0 density\n"
+			<< "please load density\n";
 		return 0;
 	} 
 	
-	bool noOptionSelected = true;
 	
 	if(isforHI){
 		n = HIDist->getHIDensity(position);
-		noOptionSelected = false;
 	}
 	if(isforHII){
 		n += this->HIIDist->getHIIDensity(position);
-		noOptionSelected = false;
 	}
 	if(isforH2){
 		n += this->H2Dist->getH2Density(position);
-		noOptionSelected = false;
 	}
 	
 	// warning if no option is activ in
-	if(noOptionSelected == true){
+	bool active = isforHI || isforHII || isforH2;
+	if(active == false){
 		KISS_LOG_WARNING
-			<< "\ntryed to get density in Massdistribution where all components are deaktivated.\n"
-			<< "Returned density of 0 \n"
-			<< "Please activate a density in or use a constant density of 0!\n";
-			return 0;
+			<< "\n called getDensity on deactivated CustomDensity \n"
+			<< "returned 0 density\n"
+			<< "please activate\n";
 	}
 	
 	return n;
 }
 
-double Massdistribution::getNucleonDensity(const Vector3d &position) const{
+double CustomDensity::getNucleonDensity(const Vector3d &position) const{
 	
 	double n=0.;
 	bool nothingLoadIn = !(HIisload || HIIisload || H2isload);
@@ -89,137 +87,154 @@ double Massdistribution::getNucleonDensity(const Vector3d &position) const{
 	if(nothingLoadIn)
 	{	
 		KISS_LOG_WARNING
-		<<"\n tryed to get NucleonDensity in Massdistribution allthough no densitytype is load in \n"
-		<<" density return is 0 \n";
-		return 0;
+		<< "\n called getNucleonDensity in CustomDensity alltough no option is loaded in. \n"
+			<< "returned 0 density\n"
+			<< "please load density\n";
 	} 
 
-	bool noOptionSelected = true;
 	
 	if(isforHI){
 		n = HIDist->getHIDensity(position);
-		noOptionSelected = false;
 	}
 	if(isforHII){
 		n += this->HIIDist->getHIIDensity(position);
-		noOptionSelected = false;
 	}
 	if(isforH2){
 		n += 2*this->H2Dist->getH2Density(position);
-		noOptionSelected = false;
 	}
 	
 	// warning if no option is activ
-	if(noOptionSelected == true){
+	bool activ = isforHI || isforHII || isforH2;
+	if(activ == false){
 		KISS_LOG_WARNING
-			<< "\ntryed to get nucleon-density in Massdistribution without loading any Option in or all components are deaktivated.\n"
-			<< "Returned density of 0 \n"
-			<< "Please load a density in or use a constant density of 0!\n";
-			return 0;
+			<< "\n called getNucleonDensity on deactivated CustomDensity. \n"
+			<< "returned 0 density\n"
+			<< "please activated\n";
 	}
 	
 	return n;
 }
 
-double Massdistribution::getHIDensity(const Vector3d &position) const {
+double CustomDensity::getHIDensity(const Vector3d &position) const {
 	
 	if(HIisload)
 		return HIDist->getHIDensity(position);
 	
 	// warning if no HI is load
 	KISS_LOG_WARNING 
-	<< "\n tryed to get HIDensity in Massdistribution, allthough no HI option is load in. \n"
+	<< "\n tryed to get HIDensity in CustomDensity, allthough no HI option is load in. \n"
 	<< "Please load HI Option or use constant Density of 0 \n"
 	<< "return a density of 0.\n";
 	return 0.;
 }
 
-double Massdistribution::getHIIDensity(const Vector3d &position) const {
+double CustomDensity::getHIIDensity(const Vector3d &position) const {
 	
 	if(HIIisload)
 		return HIIDist->getHIIDensity(position);
 	
 	// warning if no HII is load
 	KISS_LOG_WARNING 
-	<< "\n tryed to get HIIDensity in Massdistribution, allthough no HII option is load in. \n"
+	<< "\n tryed to get HIIDensity in CustomDensity, allthough no HII option is load in. \n"
 	<< "Please load HII Option or use constant Density of 0 \n"
 	<< "return a density of 0.\n";
 	return 0.;
 }
 
-double Massdistribution::getH2Density(const Vector3d &position) const {
+double CustomDensity::getH2Density(const Vector3d &position) const {
 		
 	if(H2isload)
 		return H2Dist->getH2Density(position);
 	
 	// warning if no H2 is load
 	KISS_LOG_WARNING 
-	<< "\n tryed to get H2Density in Massdistribution, allthough no H2 option is load in. \n"
+	<< "\n tryed to get H2Density in CustomDensity, allthough no H2 option is load in. \n"
 	<< "Please load H2 Option or use constant Density of 0 \n"
 	<< "return a density of 0.\n";
 	return 0.;
 }
 
-bool Massdistribution::getisforHI() {
+bool CustomDensity::getisforHI() {
 	return isforHI;
 }
 
-bool Massdistribution::getisforHII() {
+bool CustomDensity::getisforHII() {
 	return isforHII;
 }
 
-bool Massdistribution::getisforH2() {
+bool CustomDensity::getisforH2() {
 	return isforH2;
 }
 
-void Massdistribution::deaktivateHI() {
-	isforHI=false;
+void CustomDensity::setisforHI(bool HI) {
+	
+	if(HIisload==false && HI == true)
+	{	
+		KISS_LOG_WARNING
+		<<"\n CustomDensity tryed to set HI true although no model is loaded. \n";
+		return;
+	}
+	isforHI=HI;
 	return;
 }
 
-void Massdistribution::deaktivateHII() {
-	isforHII=false;
+void CustomDensity::setisforHII(bool HII) {
+
+	if(HIIisload==false && HII == true)
+	{	
+		KISS_LOG_WARNING
+		<<"\n CustomDensity tryed to set HII true although no model is loaded. \n";
+		return;
+	}
+	isforHII=HII;
 	return;
 }
 
-void Massdistribution::deaktivateH2() {
-	isforH2=false;
+void CustomDensity::setisforH2(bool H2) {
+	
+	if(H2isload==false && H2 == true)
+	{	
+		KISS_LOG_WARNING
+		<<"\n CustomDensity tryed to set H2 true although no model is loaded. \n";
+		return;
+	}
+	isforH2=H2;
 	return;
 }
 
-void MassdistributionSuperposition::addDensity(ref_ptr<Density> dens) {
+void DensityList::addDensity(ref_ptr<Density> dens) {
 	DensityList.push_back(dens);
 }
 
-double MassdistributionSuperposition::getDensity(const Vector3d &position) const {
+double DensityList::getDensity(const Vector3d &position) const {
 	double n = 0.;
 	for (int i = 0; i < DensityList.size(); i++)
 		n += DensityList[i]->getDensity(position);
 	return n;
 }
 
-double MassdistributionSuperposition::getHIDensity(const Vector3d &position) const {
+double DensityList::getHIDensity(const Vector3d &position) const {
 	double n = 0.;
 	for (int i = 0; i < DensityList.size(); i++)
 		n += DensityList[i]->getHIDensity(position);
 	return n;
 }
 
-double MassdistributionSuperposition::getHIIDensity(const Vector3d &position) const {
+double DensityList::getHIIDensity(const Vector3d &position) const {
 	double n = 0.;
 	for (int i = 0; i < DensityList.size(); i++)
 		n += DensityList[i]->getHIIDensity(position);
 	return n;
 }
 
-double MassdistributionSuperposition::getH2Density(const Vector3d &position) const {
+double DensityList::getH2Density(const Vector3d &position) const {
 	double n = 0.;
 	for (int i = 0; i < DensityList.size(); i++)
 		n += DensityList[i]->getH2Density(position);
 	return n;
 }
 
-double MassdistributionSuperposition::getNucleonDensity(const Vector3d &position) const {
+double DensityList::getNucleonDensity(const Vector3d &position) const {
 	double n = 0.;
 	for (int i = 0; i < DensityList.size(); i++)
 		n += DensityList[i]->getNucleonDensity(position);

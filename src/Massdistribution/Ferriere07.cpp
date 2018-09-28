@@ -5,6 +5,10 @@ namespace crpropa {
 
 Vector3d Ferriere::CMZTrafo(const Vector3d &position) const {
 	
+	// set galactocentric coordinate system with the Sun at (-8.5,0.,0.) instead of (8.5, 0, 0) to be consistand with JF12 implementation
+	double x = -position.x;
+	double y = -position.y;
+	
 	double xC = -50*pc;		//offset
 	double yC = 50*pc;	
 	double sinTc = sin(70./180.*M_PI);	//Tc = 70 deg
@@ -12,25 +16,21 @@ Vector3d Ferriere::CMZTrafo(const Vector3d &position) const {
 	
 	
 	Vector3d pos;
-	pos.x = (position.x - xC)*cosTc + (position.y -yC)*sinTc;
-	pos.y = -(position.x -xC)*sinTc + (position.y - yC)*cosTc;
+	pos.x = (x - xC)*cosTc + (y - yC)*sinTc;
+	pos.y = -(x - xC)*sinTc + (y - yC)*cosTc;
 	pos.z = position.z;
-	
-	// check if something went wrong with transformation
-	bool NaN = std::isnan(pos.getR());
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nTransformation with nan-Position occured: \n"
-			<< "in density module Ferriere 2007 in the CMZ-Trafo\n " 
-			<< "Position In = " << position << "\n"
-			<< "Position Trafo = " << pos << "\n";
-	}		
+		
 	
 	return pos;
 }
 
 Vector3d Ferriere::DISKTrafo(const Vector3d &position) const { 
 
+	// set galactocentric coordinate system with the Sun at (-8.5,0.,0.) instead of (8.5, 0, 0) to be consistand with JF12 implementation
+	double x = -position.x;
+	double y = - position y;
+	double z = position.z;
+	
 	double alphaD = 13.5/180.*M_PI;	// rotation arround x-axis
 	double sinAd = sin(alphaD);
 	double cosAd = cos(alphaD);
@@ -43,9 +43,8 @@ Vector3d Ferriere::DISKTrafo(const Vector3d &position) const {
 	
 	Vector3d pos;
 	
-	double x = position.x;
-	double y = position.y;
-	double z = position.z;
+
+
 	
 	pos.x = x*cosBd*cosTd - y*(sinAd*sinBd*cosTd -cosAd*sinTd)-z*(cosAd*sinBd*cosTd +sinAd*sinTd);
 	
@@ -55,17 +54,7 @@ Vector3d Ferriere::DISKTrafo(const Vector3d &position) const {
 	
 	pos.z = x*sinBd;
 	pos.z += y*sinAd*cosBd;
-	pos.z += z*cosAd*cosBd;
-	
-	// check if something went wrong with transformation
-	bool NaN = std::isnan(pos.getR());
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nTransformation with nan-Position occured: \n"
-			<< "in density module Ferriere 2007 in the DISK-Trafo\n " 
-			<< "Position In = " << position << "\n"
-			<< "Position Trafo = " << pos << "\n";
-	}		
+	pos.z += z*cosAd*cosBd;		
 	
 	return pos;
 }
@@ -76,21 +65,19 @@ Vector3d Ferriere::DISKTrafo(const Vector3d &position) const {
 double Ferriere::getHIDensity(const Vector3d &position) const {
 	
 	double n = 0;
-	double R = sqrt(pow(position.x,2)+pow(position.y,2));
-	
+	double R = sqrt(position.x*position.x+position.y*position.y);	
 	bool inner = R<3*kpc;
-	bool outer = !inner;	// needed for error message
 	
 	if(inner == true) 
 	{
 		double nCMZ = 0;	//center
 		
-		Vector3d pos = CMZTrafo(position);	//coordinat trafo
+		Vector3d pos = CMZTrafo(position);	//coordinate trafo
 		double x = pos.x/pc;	// all units in pc
 		double y = pos.y/pc;
 		double z = pos.z/pc;
 		
-		double A = sqrt(pow(x,2)+pow(2.5*y,2));
+		double A = sqrt(x*x+2.5*2.5*y*y);
 		nCMZ = 8.8*exp(-pow((A-125.)/137,4))*exp(-pow(z/54.,2));
 		
 		double nDisk = 0;		//disk
@@ -100,57 +87,38 @@ double Ferriere::getHIDensity(const Vector3d &position) const {
 		y = pos.y/pc;
 		z = pos.z/pc;
 		
-		A = sqrt(pow(x,2)+pow(3.1*y,2));
+		A = sqrt(x*x+3.1*3.1*y*y);
 		nDisk = 0.34*exp(-pow((A-1200.)/438.,4))*exp(-pow(z/120,2));
 		
-		
 		n = nCMZ + nDisk;
-		
-		
-		
 	}
 	else{ // outer region
 
 		double z = position.z/pc;	
 		double a;
 		if(R<=Rsun){
-			a= 1;
+			a = 1;
 		}
 		else {
 			a = R/Rsun;
 		}
 		
 		
-		double nCold =0;	//cold HI
+		double nCold = 0;	//cold HI
 		nCold += 0.859*exp(-pow(z/(127*a),2));
 		nCold += 0.047*exp(-pow(z/(318*a),2));
 		nCold += 0.094*exp(-fabs(z)/(403*a));
-		nCold *= 0.340/(pow(a,2));
+		nCold *= 0.340/(a*a);
 		
 		
-		double nWarm =0;	//warm HI
+		double nWarm = 0;	//warm HI
 		nWarm += (1.745 - 1.289/a)*exp(-pow(z/(127*a),2));
 		nWarm += (0.473 - 0.070/a)*exp(-pow(z/(318*a),2));
 		nWarm += (0.283 - 0.142/a)*exp(-fabs(z)/(403*a));
 		nWarm *= 0.226/a;
 		
-		n=nWarm+nCold;
+		n = nWarm + nCold;
 
-	}
-	
-	// check if density is NAN
-	// return 0 instead
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured: \n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Ferriere 2007 \n"
-			<< "density-type: HI (atomic)\n"
-			<< "region inner = " << inner << "\n"
-			<< "region outer = " << outer << "\n"
-			<< "density is set to 0. \n";
-			return 0.;
 	}
 	
 	return n/ccm;
@@ -159,38 +127,34 @@ double Ferriere::getHIDensity(const Vector3d &position) const {
 double Ferriere::getHIIDensity(const Vector3d &position) const {
 
 	double n = 0;
-	double R = sqrt(pow(position.x,2)+pow(position.y, 2));
+	double R = sqrt(position.x*position.x+position.y*position.y);
 	bool inner = R< 3*kpc;
-	bool outer = !inner;	// needed for error message
-	
+		
 	if(inner == true){   //inner
 	
 	double x = position.x/pc;
 	double y = position.y/pc;
 	double z = position.z/pc;
 	
-	
-	
-	
 	//warm interstellar matter
-	double nWIM =0;		
+	double nWIM = 0;		
 		
-	nWIM += exp(-(pow(x,2)+pow(y+10,2))/pow(145,2))*exp(-pow((z+20)/26.,2));
+	nWIM += exp(-(x*x+pow(y+10,2))/pow(145,2))*exp(-pow((z+20)/26.,2));
 	nWIM += 0.009*exp(-pow((R/pc-3700)/(0.5*3700),2))*1/pow(cosh(z/140.),2);
 	nWIM += 0.005*cos(M_PI*R/pc*0.5/17000)*1/pow(cosh(z/950.),2);
 	
-	nWIM *= 8.0;	//center Density for scaling [cm^-3]
+	nWIM *= 8.0;	//rescaling
 	
 	
 	//very hot interstellar matter
 	double nVHIM = 0;
-	double alphaVH = 21./180*M_PI;		//angel for very hot IM in radiant 
+	double alphaVH = 21./180*M_PI;		//angle for very hot IM in radiant 
 	double cosA = cos(alphaVH);
 	double sinA = sin(alphaVH);
 	double etta = y*cosA+z*sinA;		// coordinate transformation for VHIM along major axis
 	double chi = -y*sinA+z*cosA;
 	
-	nVHIM = 0.29*exp(-((pow(x,2)+pow(etta,2))/pow(162,2)+pow(chi/90,2)));
+	nVHIM = 0.29*exp(-(x*x+etta*etta)/(162*162)+pow(chi/90,2)));
 	
 	n = nWIM + nVHIM;
 	
@@ -203,9 +167,6 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 		nWarm += 0.0237*exp(-(pow(R,2)-pow(Rsun,2))/pow(37*kpc,2))*exp(-fabs(z)/(1*kpc));
 		nWarm += 0.0013*exp(-(pow(R-4*kpc,2)-pow(Rsun-4*kpc,2))/pow(2*kpc,2))*exp(-fabs(z)/(150*pc));
 		
-		
-		
-		
 		double nHot = 0;
 		nHot += 0.12*exp(-(R-Rsun)/(4.9*kpc));
 		nHot += 0.88*exp(-(pow(R-4.5*kpc,2)-pow(Rsun-4.5*kpc,2))/pow(2.9*kpc,2));
@@ -215,21 +176,6 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 		
 		n= nWarm + nHot;
 		
-	}
-	
-	// check if density is NAN
-	// return 0 instead
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured: \n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Ferriere 2007 \n"
-			<< "density-type: HII (ionised) \n"
-			<< "region innen = " << inner << "\n"
-			<< "region outer = " << outer << "\n"
-			<< "density is set to 0. \n";
-			return 0.;
 	}
 		
 	return n/ccm;
@@ -241,7 +187,6 @@ double Ferriere::getH2Density(const Vector3d &position) const{
 	double n=0;
 	double R=sqrt(pow(position.x,2)+pow(position.y,2));
 	bool inner = R<3*kpc;	
-	bool outer = !inner;	// needed for error message
 	
 	if(inner == true) {		
 	
@@ -255,7 +200,7 @@ double Ferriere::getH2Density(const Vector3d &position) const{
 		
 		double A = sqrt(pow(x,2)+pow(2.5*y,2));	// ellipticity
 		nCMZ = exp(-pow((A-125.)/137.,4))*exp(-pow(z/18.,2));
-		nCMZ *= 150;		// density at Center for scale
+		nCMZ *= 150;		// rescaling
 		
 		pos = DISKTrafo(position);	// coord trafo for disk
 		x=pos.x/pc;
@@ -264,7 +209,7 @@ double Ferriere::getH2Density(const Vector3d &position) const{
 		
 		A = sqrt(pow(x,2)+pow(3.1*y,2));
 		nDISK = exp(-pow((A-1200)/438,4))*exp(-pow(z/42,2));
-		nDISK *= 4.8;		//density at center for scale [cm^-3]
+		nDISK *= 4.8;		//rescaling
 		
 		n = nCMZ + nDISK;
 	}	
@@ -273,22 +218,7 @@ double Ferriere::getH2Density(const Vector3d &position) const{
 		n = pow(R/Rsun, -0.58);
 		n *= exp(-(pow(R-4.5*kpc,2)-pow(Rsun-4.5*kpc,2))/pow(2.9*kpc,2));
 		n *= exp(-pow(z/(81*pow(R/Rsun,0.58)),2));
-		n *= 0.58;		//density at center for scale [cm^-3]
-	}
-	
-	// check if density is NAN
-	// return 0 instead
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured:\n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Ferriere 2007 \n"
-			<< "density-type: H2 (molecular)\n"
-			<< "region innen = " << inner << "\n"
-			<< "region außen = " << outer << "\n"
-			<< "density is set to 0. \n";
-			return 0;
+		n *= 0.58;		//rescaling
 	}
 	
 	return n/ccm;
@@ -312,10 +242,9 @@ double Ferriere::getDensity(const Vector3d &position) const{
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get density although all density-types are deaktivated \n"
-			<< "density-module: Ferriere\n"
+			<< "\n called getDensity on deactivated Ferriere \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please activate \n";
 	}
 	
 	return n;
@@ -339,10 +268,9 @@ double Ferriere::getNucleonDensity(const Vector3d &position) const{
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get nucleon-density although all density-types are deaktivated \n"
-			<< "density-module: Ferriere\n"
+			<< "\n called getDensity on deactivated ConstantDensity \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please activate\n";
 	}
 	
 	return n;
@@ -382,7 +310,7 @@ bool Ferriere::getisforH2(){
 std::string Ferriere::getDescription() {
 	
 	std::stringstream s;
-	s << "Density modell Ferrie 2007: ";
+	s << "Density modell Ferriere 2007: ";
 	s<< "HI component is ";
 	if(!isforHI)
 		s<< "not ";

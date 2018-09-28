@@ -2,7 +2,7 @@
 
 namespace crpropa{
 
-constantDensity::constantDensity(double HI, double HII, double H2) {
+ConstantDensity::ConstantDensity(double HI, double HII, double H2) {
 
 	//set all types activ which are not equal 0 and change densitynumber
 	if(HI!=0)
@@ -13,151 +13,136 @@ constantDensity::constantDensity(double HI, double HII, double H2) {
 		setH2(true, H2);
 }
 
-constantDensity::constantDensity(double densitynumber) {
-	if(densitynumber == 0)	// total density is 0 and "pseudo" activ component (default) is HI
-	{
-		setHI(true,0);
-	}
-	else	// all types set to same density
-	{
-		setHI(true,densitynumber);
-		setHII(true,densitynumber);
-		setH2(true,densitynumber);
-	}
-}
 
-double constantDensity::getDensity(const Vector3d &position) const {
+double ConstantDensity::getDensity(const Vector3d &position) const {
 	double n = 0;
 				
-	if(isforHI) 
+	if(isHI) 
 		n += HIdensitynumber;
-	if(isforHII)
+	if(isHII)
 		n += HIIdensitynumber;
-	if(isforH2)
+	if(isH2)
 		n += H2densitynumber;
 	
 	//check if any density is activ and give warning if not
-	bool anyDensityActive = isforHI||isforHII||isforH2;
+	bool anyDensityActive = isHI||isHII||isH2;
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get density although all density-types are deaktivated \n"
-			<< "density-module: constantDensity\n"
+			<< "\n called getDensity on deactivated ConstantDensity \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please use setHx(true, n)\n";
 	}
 
 	return n;
 }
 
-double constantDensity::getNucleonDensity(const Vector3d &position) const {
+double ConstantDensity::getNucleonDensity(const Vector3d &position) const {
 	double n = 0;
 				
-	if(isforHI) 
+	if(isHI) 
 		n += HIdensitynumber;
-	if(isforHII)
+	if(isHII)
 		n += HIIdensitynumber;
-	if(isforH2)
+	if(isH2)
 		n += 2*H2densitynumber;
 	
 	//check if any density is activ and give warning if not
-	bool anyDensityActive = isforHI||isforHII||isforH2;
+	bool anyDensityActive = isHI||isHII||isH2;
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get nucleon-density although all density-types are deaktivated \n"
-			<< "density-module: constantDensity\n"
+			<< "\n called getNucleonDensity on deactivated ConstantDensity \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please use setHx(true, n)\n";
 	}
-
 	return n;
 }
 
-double constantDensity::getHIDensity(const Vector3d &position) const {
+double ConstantDensity::getHIDensity(const Vector3d &position) const {
 		
 	return HIdensitynumber;
 }
 	
-double constantDensity::getHIIDensity(const Vector3d &position) const{
+double ConstantDensity::getHIIDensity(const Vector3d &position) const{
 		
 	return HIIdensitynumber;
 }
 
-double constantDensity::getH2Density(const Vector3d &position) const{
+double ConstantDensity::getH2Density(const Vector3d &position) const{
 
 	return H2densitynumber;
 }
 
-bool constantDensity::getisforHI() {
+bool ConstantDensity::getisforHI() {
 
-	return isforHI;
+	return isHI;
 }
 
-bool constantDensity::getisforHII() {
+bool ConstantDensity::getisforHII() {
 
-	return isforHII;
+	return isHII;
 }
 
-bool constantDensity::getisforH2() {
+bool ConstantDensity::getisforH2() {
 
-	return isforH2;
+	return isH2;
 }
 
-void constantDensity::setHI(bool activate, double densitynumber) {	
+void ConstantDensity::setHI(bool activate, double densitynumber) {	
 	
-	isforHI = activate;
+	isHI = activate;
 	HIdensitynumber = densitynumber;
 }
 
-void constantDensity::setHI(bool activate) {
+void ConstantDensity::setHI(bool activate) {
 	setHI(activate, HIdensitynumber);	 
 }
 
-void constantDensity::setHI(double densitynumber) {
-	setHI(isforHI, densitynumber);	
+void ConstantDensity::setHI(double densitynumber) {
+	setHI(isHI, densitynumber);	
 }
 
 
-void constantDensity::setHII(bool activate, double densitynumber) {
+void ConstantDensity::setHII(bool activate, double densitynumber) {
 
-	isforHII = activate;
+	isHII = activate;
 	HIIdensitynumber = densitynumber;
 }
 
-void constantDensity::setHII(bool activate) {
+void ConstantDensity::setHII(bool activate) {
 	setHII(activate, HIIdensitynumber);	 
 }
 
-void constantDensity::setHII(double densitynumber) {
-	setHII(isforHII, densitynumber);	
+void ConstantDensity::setHII(double densitynumber) {
+	setHII(isHII, densitynumber);	
 }
 
-void constantDensity::setH2(bool activate, double densitynumber) {
+void ConstantDensity::setH2(bool activate, double densitynumber) {
 
-	isforH2 = activate;
+	isH2 = activate;
 	H2densitynumber = densitynumber;
 }
-void constantDensity::setH2(bool activate) {
+void ConstantDensity::setH2(bool activate) {
 	setH2(activate, H2densitynumber);	 
 }
 
-void constantDensity::setH2(double densitynumber) {
-	setH2(isforH2, densitynumber);	
+void ConstantDensity::setH2(double densitynumber) {
+	setH2(isH2, densitynumber);	
 }
 
-std::string constantDensity::getDescription() {
+std::string ConstantDensity::getDescription() {
 	
 	std::stringstream s;
-	s << "constant Density:";
+	s << "ConstantDensity:";
 	s<< "HI component is ";
-	if(!isforHI)
+	if(!isHI)
 		s<< "not ";
 	s<< "activ and has a density of " << HIdensitynumber/ccm << " cm^-3" << "      HII component is ";
-	if(!isforHII)
+	if(!isHII)
 		s<< "not ";
 	s<<"activ and  has a density of " << HIIdensitynumber/ccm<<" cm^-3" <<  "      H2 component is ";
-	if(!isforH2)
+	if(!isH2)
 		s<<"not "; 
 	s<<"activ and  has a density of " << H2densitynumber/ccm << " cm^-3";
 	return s.str();

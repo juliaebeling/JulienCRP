@@ -10,24 +10,12 @@ double Cordes::getHIIDensity(const Vector3d &position) const {
 	double n=0;
 	
 	double z=position.z;
-	double R = sqrt(pow(position.x,2)+pow(position.y,2));	//radius in galactic disk
+	double R = sqrt(position.x*position.x+position.y*position.y);	//radius in galactic disk
 	
-	n += 0.025*exp(-fabs(z/kpc)/1)*exp(-pow(R/20/kpc,2));	//galactocentric component
-	n += 0.2*exp(-fabs(z/kpc)/0.15)*exp(-pow((R-4*kpc)/2/kpc,2));	//anular component
+	n += 0.025*exp(-fabs(z)/(1*kpc))*exp(-pow(R/(20*kpc),2));	//galactocentric component
+	n += 0.2*exp(-fabs(z)/(0.15*kpc))*exp(-pow((R-4*kpc)/(2*kpc),2));	//anular component
 
-	// check if density is NAN
-	// return 0 instead
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured: \n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Cordes 1991 \n"
-			<< "density-type: HII (ionised) \n"
-			<< "density is set to 0. \n";
-			return 0.;
-	}
-		return n/ccm;
+	return n/ccm;
 }
 
 double Cordes::getDensity(const Vector3d &position) const {

@@ -1,9 +1,9 @@
-#include "crpropa/Massdistribution/Massdistribution.h"
-#include "crpropa/Massdistribution/Cordes.h"
-#include "crpropa/Massdistribution/Ferriere07.h"
-#include "crpropa/Massdistribution/Nakanishi.h"
-#include "crpropa/Massdistribution/Pohl2008.h"
-#include "crpropa/Massdistribution/ConstantDensity.h"
+#include "crpropa/CustomDensity/CustomDensity.h"
+#include "crpropa/CustomDensity/Cordes.h"
+#include "crpropa/CustomDensity/Ferriere07.h"
+#include "crpropa/CustomDensity/Nakanishi.h"
+#include "crpropa/CustomDensity/Pohl2008.h"
+#include "crpropa/CustomDensity/ConstantDensity.h"
 #include "crpropa/Units.h"
 
 #include "gtest/gtest.h"
@@ -13,8 +13,8 @@
 namespace crpropa {
 
 TEST(testConstantDensity, SimpleTest) {
-	//test constant Density in all types and in total density (output)
-	constantDensity n(2/ccm,3/ccm, 2/ccm);
+	//test ConstantDensity in all types and in total density (output)
+	ConstantDensity n(2/ccm,3/ccm, 2/ccm);
 	Vector3d p(1*pc,2*pc,1*kpc); 	// random position for testing density
 	EXPECT_DOUBLE_EQ(n.getHIDensity(p), 2e6);	// density output in m^-3
 	EXPECT_DOUBLE_EQ(n.getHIIDensity(p), 3e6);
@@ -38,12 +38,12 @@ TEST(testConstantDensity, SimpleTest) {
 	n.setH2(500.);
 	
 	
-	//check if output is changed too 500 in types and is 0 (all deaktivated) for Hges
-	EXPECT_DOUBLE_EQ(n.getHIDensity(p), 500);	
-	EXPECT_DOUBLE_EQ(n.getHIIDensity(p), 500);
-	EXPECT_DOUBLE_EQ(n.getH2Density(p), 500);
+	//check if output is changed to 500 in types and is 0 (all deactivated) for Hges
+	EXPECT_DOUBLE_EQ(n.getHIDensity(p), 500.);	
+	EXPECT_DOUBLE_EQ(n.getHIIDensity(p), 500.);
+	EXPECT_DOUBLE_EQ(n.getH2Density(p), 500.);
 	
-	//set all type-use to false
+	//deactivate all 
 	n.setHI(false);
 	n.setHII(false);
 	n.setH2(false);
@@ -56,43 +56,26 @@ TEST(testConstantDensity, SimpleTest) {
 	EXPECT_FALSE(useHII);
 	EXPECT_FALSE(useH2);
 	
-	//get type density is independent from type activation, get density is not independent 
-	//check if get density returns 0. (should give a error massage in log file)
+	//get<type>Density is independent of type activation, getDensity is not independent 
+	//check if getDensity returns 0. (should give a error message in log file)
 	EXPECT_DOUBLE_EQ(n.getDensity(p), 0);
 	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
 	
 	
-	//check Constructor with one double for all type
-	constantDensity n2(1.);
-	EXPECT_DOUBLE_EQ(n2.getHIDensity(p),1);
-	EXPECT_DOUBLE_EQ(n2.getHIIDensity(p),1);
-	EXPECT_DOUBLE_EQ(n2.getH2Density(p),1);
-	EXPECT_DOUBLE_EQ(n2.getDensity(p),3);
-	EXPECT_DOUBLE_EQ(n2.getNucleonDensity(p),4);	// 1 + 1 + 1*2 = 4	factor 2 for molecular hydrogen
-	
-	
-	//check zero Density
-	constantDensity n3(0.);
-	EXPECT_DOUBLE_EQ(n3.getHIDensity(p),0);
-	EXPECT_DOUBLE_EQ(n3.getHIIDensity(p),0);
-	EXPECT_DOUBLE_EQ(n3.getH2Density(p),0);
-	EXPECT_DOUBLE_EQ(n3.getDensity(p),0);
-	EXPECT_DOUBLE_EQ(n3.getNucleonDensity(p),0);
-	
 }
 
-TEST(testMassdistribution, SimpleTest) {
+TEST(testCustomDensity, SimpleTest) {
 	
-	Massdistribution MD;
+	CustomDensity MD;
 	
 	Vector3d p(50*pc, 20*pc, -100*pc);	//random position for testing density 
 	
 	//try to get density without load any option in. Should give Warning in log-File and return density of 0.
 	EXPECT_DOUBLE_EQ(MD.getDensity(p),0);	
 	
-	MD.add(new constantDensity(1,1,1));	//only HI types
-	MD.add(new constantDensity(0,2,0));	//only HII type
-	MD.add(new constantDensity(0,0,3));	//only H2 type
+	MD.add(new ConstantDensity(1,1,1));	//all types loaded
+	MD.add(new ConstantDensity(0,2,0));	//overwrite HII type 
+	MD.add(new ConstantDensity(0,0,3));	//overwrite H2 type
 
 
 	
@@ -109,17 +92,17 @@ TEST(testMassdistribution, SimpleTest) {
 	EXPECT_TRUE(MD.getisforH2());
 	
 	//check type deaktivate funktion
-	MD.deaktivateHI();
+	MD.setisforHI(false);
 	EXPECT_FALSE(MD.getisforHI());
 	EXPECT_TRUE(MD.getisforHII());
 	EXPECT_TRUE(MD.getisforH2());
 	
-	MD.deaktivateHII();
+	MD.setisforHII(false);
 	EXPECT_FALSE(MD.getisforHI());
 	EXPECT_FALSE(MD.getisforHII());
 	EXPECT_TRUE(MD.getisforH2());
 	
-	MD.deaktivateH2();
+	MD.setisforH2(false);
 	EXPECT_FALSE(MD.getisforHI());
 	EXPECT_FALSE(MD.getisforHII());
 	EXPECT_FALSE(MD.getisforH2());
@@ -131,11 +114,11 @@ TEST(testMassdistribution, SimpleTest) {
 
 } 
 
-TEST(testMassdistributionSuperposition, SimpleTest) {
+TEST(testDensityList, SimpleTest) {
 
-	MassdistributionSuperposition MS;
-	MS.addDensity(new constantDensity(1,1,2));	//sum 4
-	MS.addDensity(new constantDensity(2,3,1));	//sum 6
+	DensityList MS;
+	MS.addDensity(new ConstantDensity(1,1,2));	//sum 4
+	MS.addDensity(new ConstantDensity(2,3,1));	//sum 6
 	
 	Vector3d p(50*pc,10*pc,-30*pc);	//random position for testing density
 	EXPECT_DOUBLE_EQ(MS.getHIDensity(p),3);
@@ -163,10 +146,6 @@ TEST(testCordes, SimpleTest) {
 	p.z=30*pc;			// invariant density for +/- z
 	EXPECT_NEAR(n.getDensity(p),184500,1); 
 	
-	//check NaN exception
-	//gives a error massage (in log file) and set denstiy to zero
-	Vector3d p2(NAN);
-	EXPECT_DOUBLE_EQ(n.getHIIDensity(p2),0);
 }
 
 TEST(testNakanishi, SimpleTest) {
@@ -243,7 +222,7 @@ TEST(testFerriere, SimpleTest) {
 	EXPECT_TRUE(n.getisforH2());
 	
 	//testing density in inner Ring (R <= 3*kpc)
-	Vector3d p(-60*pc,60*pc,-20*pc);	//testing position in region of CMZ
+	Vector3d p(60*pc,-60*pc,-20*pc);	//testing position in region of CMZ
 	
 	//test CMZ Trafo
 	Vector3d Trafo;
@@ -265,12 +244,12 @@ TEST(testFerriere, SimpleTest) {
 	EXPECT_NEAR(n.getDensity(p),47292883,1);
 	EXPECT_NEAR(n.getNucleonDensity(p),82777708,1);		//factor 2 in molecular hydrogen
 	
-	Vector3d p2(500*pc,900*pc,35*pc);	//testing position in region of the DISK
+	Vector3d p2(-500*pc,-900*pc,35*pc);	//testing position in region of the DISK
 	EXPECT_NEAR(n.getHIIDensity(p2),48190,1);
 	EXPECT_NEAR(n.getHIDensity(p2),5,1);
 	EXPECT_NEAR(n.getH2Density(p2),0,1);
 	EXPECT_NEAR(n.getDensity(p2),48195,1);
-	EXPECT_NEAR(n.getNucleonDensity(p2),48195,1);	// no H2 component -> no differenz between density and nucleon-density
+	EXPECT_NEAR(n.getNucleonDensity(p2),48195,1);	// no H2 component -> no difference between density and nucleon-density
 	
 	//testing the outer region R>3kpc
 	
@@ -288,7 +267,7 @@ TEST(testFerriere, SimpleTest) {
 	EXPECT_NEAR(n.getDensity(p4),507502,1);
 	EXPECT_NEAR(n.getNucleonDensity(p4),561601,1);
 	
-	//test get/set type funktion
+	//test get/set type function
 	
 	n.setisforHI(false);
 	EXPECT_FALSE(n.getisforHI());
@@ -305,16 +284,9 @@ TEST(testFerriere, SimpleTest) {
 	EXPECT_FALSE(n.getisforHII());
 	EXPECT_FALSE(n.getisforH2());
 	
-	//check if density is set to zero if all types are deaktivated (schould give warning in log-file)
+	//check if density is set to zero if all types are deactivated (should give warning in log-file)
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);
 	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
-	
-	//check NaN exception
-	//gives Error massage in logfile for Transformation 
-	Vector3d pNaN(NAN);
-	EXPECT_DOUBLE_EQ(n.getHIDensity(pNaN),0);
-	EXPECT_DOUBLE_EQ(n.getHIIDensity(pNaN),0);
-	EXPECT_DOUBLE_EQ(n.getH2Density(pNaN),0);
 }
 
 TEST(testPohl,SimpleTest) {

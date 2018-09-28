@@ -25,16 +25,16 @@ inner:	arxiv:	astro-ph/0702532
 class Ferriere: public Density {
 
 private:
-
-	bool isforHI = true;		// standard for all types of distribution
+	// standard for all types of distribution
+	bool isforHI = true;		
 	bool isforHII = true;
 	bool isforH2 = true;
-	double Rsun = 8500*pc;	
+	double Rsun = 8500*pc;	// distance sun-galactic center
 	
 
 public:
-	Vector3d CMZTrafo(const Vector3d &position) const; // coordinat trafo for the CMZ Region
-	Vector3d DISKTrafo(const Vector3d &position) const; // coordinat trafo for the region of the disk in galactic center
+	Vector3d CMZTrafo(const Vector3d &position) const; // coordinate trafo for the CentralMolecularZone Region
+	Vector3d DISKTrafo(const Vector3d &position) const; // coordinate trafo for the region of the disk in galactic center
 
 	double getDensity(const Vector3d &position) const;
 	double getHIDensity(const Vector3d &position) const;
