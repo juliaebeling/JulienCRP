@@ -66,7 +66,7 @@ double Pohl08::getH2Density(const Vector3d &position) const {
 	double n = 0; //density in ccm
 	Vector3d pos = position;
 	
-	if(fabs(pos.x)>15*kpc)	//boundary of Grid not repeat periodicly
+	if(fabs(pos.x)>15*kpc)	//boundary of Grid not repeat
 	{
 		return 0;
 	}
@@ -80,20 +80,7 @@ double Pohl08::getH2Density(const Vector3d &position) const {
 	}
 	
 	n= H2density.interpolate(pos);
-	
-	// check if density is NAN
-	// return 0 instead
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured:\n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Pohl 2008 \n"
-			<< "density-type: H2 (molecular)\n"
-			<< "density is set to 0. \n";
-			return 0;
-	}
-	
+		
 	return n/ccm;
 }
 
@@ -103,7 +90,7 @@ double Pohl08::getHIDensity(const Vector3d &position) const {
 	double n = 0;	// density in ccm
 	Vector3d pos = position;
 	
-	if(fabs(pos.x)>20*kpc)	//boundary of Grid not repeat periodicly
+	if(fabs(pos.x)>20*kpc)	//boundary of Grid not repeat 
 	{
 		return 0;
 	}
@@ -118,18 +105,6 @@ double Pohl08::getHIDensity(const Vector3d &position) const {
 	
 	n= HIdensity.interpolate(pos);
 	
-	// check if density is NAN
-	// return 0 instead
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured:\n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Pohl 2008 \n"
-			<< "density-type: HI (atomic)\n"
-			<< "density is set to 0. \n";
-			return 0;
-	}
 	
 	return n/ccm;
 	
@@ -146,10 +121,9 @@ double Pohl08::getDensity(const Vector3d &position) const {
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get density although all density-types are deaktivated \n"
-			<< "density-module: Ferriere\n"
+			<< "\n called getDensity on deactivated Pohl \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please activate \n";
 	}	
 	
 	return n;
@@ -168,10 +142,9 @@ double Pohl08::getNucleonDensity(const Vector3d &position) const {
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get nucleon-density although all density-types are deaktivated \n"
-			<< "density-module: Ferriere\n"
+			<< "\n called getNucleonDensity on deactivated Ferriere \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please activate \n"; 
 	}	
 	
 	return n;

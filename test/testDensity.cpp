@@ -312,13 +312,7 @@ TEST(testPohl,SimpleTest) {
 	EXPECT_NEAR(n.getH2Density(p),23500,1);
 	EXPECT_NEAR(n.getDensity(p),30245,1);
 	EXPECT_NEAR(n.getNucleonDensity(p),53745,1);
-	
-	//check NaN exception
-	//gives Error massage in logfile for Transformation 
-	Vector3d pNaN(NAN);
-	EXPECT_DOUBLE_EQ(n.getHIDensity(pNaN),0);
-	EXPECT_DOUBLE_EQ(n.getH2Density(pNaN),0);
-	
+		
 	//test set type funktion
 	n.setisforHI(false);
 	EXPECT_FALSE(n.getisforHI());
