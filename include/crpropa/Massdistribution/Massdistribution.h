@@ -4,7 +4,7 @@
 
 #include "crpropa/Units.h"
 #include "crpropa/Vector3.h"
-#include "crpropa/CustomDensity/Density.h"
+#include "crpropa/Massdistribution/Density.h"
 
 #include <string>
 #include <vector>

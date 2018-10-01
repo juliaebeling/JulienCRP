@@ -41,18 +41,6 @@ double Nakanishi::getHIDensity(const Vector3d &position) const {
 	double scaleheight = getHIScaleheight(position);
 	n= planedensity*pow(0.5,pow(position.z/scaleheight,2));
 	
-	// check if density is NAN
-	// return 0 instead and give warning
-	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured:\n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Nakanishi \n"
-			<< "density-type: HI (atomic)\n"
-			<< "density is set to 0. \n";
-			return 0;
-	}
 	
 	return n;
 }
@@ -67,16 +55,6 @@ double Nakanishi::getH2Density(const Vector3d &position) const {
 	// check if density is NAN
 	// return 0 instead and give warning 
 	bool NaN = std::isnan(n);
-	if(NaN == true){
-		KISS_LOG_WARNING
-			<< "\nDensity with 'nan' occured:\n"
-			<< "postion = " << position << "\n"
-			<< "density-model: Nakanishi \n"
-			<< "density-type: H2 (molecular)\n"
-			<< "density is set to 0. \n";
-			return 0;
-	}
-	
 	return n;
 }
 	
@@ -93,10 +71,9 @@ double Nakanishi::getDensity(const Vector3d &position) const {
 
 	if(anyDensityActive == false){
 		KISS_LOG_WARNING
-			<< "\n tryed to get density although all density-types are deaktivated \n"
-			<< "density-module: Nakanishi\n"
+			<< "\n called getDensity on deactivated Nakanishi \n"
 			<< "returned 0 density\n"
-			<< "please use constant Density with 0 \n";
+			<< "please activate\n";
 	}	
 	
 	return n;

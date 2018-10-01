@@ -1,9 +1,9 @@
-#include "crpropa/CustomDensity/CustomDensity.h"
-#include "crpropa/CustomDensity/Cordes.h"
-#include "crpropa/CustomDensity/Ferriere07.h"
-#include "crpropa/CustomDensity/Nakanishi.h"
-#include "crpropa/CustomDensity/Pohl2008.h"
-#include "crpropa/CustomDensity/ConstantDensity.h"
+#include "crpropa/Massdistribution/Massdistribution.h"
+#include "crpropa/Massdistribution/Cordes.h"
+#include "crpropa/Massdistribution/Ferriere07.h"
+#include "crpropa/Massdistribution/Nakanishi.h"
+#include "crpropa/Massdistribution/Pohl2008.h"
+#include "crpropa/Massdistribution/ConstantDensity.h"
 #include "crpropa/Units.h"
 
 #include "gtest/gtest.h"
@@ -91,7 +91,7 @@ TEST(testCustomDensity, SimpleTest) {
 	EXPECT_TRUE(MD.getisforHII());
 	EXPECT_TRUE(MD.getisforH2());
 	
-	//check type deaktivate funktion
+	//check type deactivate funktion
 	MD.setisforHI(false);
 	EXPECT_FALSE(MD.getisforHI());
 	EXPECT_TRUE(MD.getisforHII());
@@ -107,7 +107,7 @@ TEST(testCustomDensity, SimpleTest) {
 	EXPECT_FALSE(MD.getisforHII());
 	EXPECT_FALSE(MD.getisforH2());
 	
-	//check density output if all types are deaktivated
+	//check density output if all types are deactivated
 	//should give error message in log-file and return density of 0.
 	EXPECT_DOUBLE_EQ(MD.getDensity(p),0.);
 	EXPECT_DOUBLE_EQ(MD.getNucleonDensity(p),0.);
@@ -204,11 +204,6 @@ TEST(testNakanishi, SimpleTest) {
 	EXPECT_DOUBLE_EQ(n.getDensity(p),0);	
 	EXPECT_DOUBLE_EQ(n.getNucleonDensity(p),0);
 	
-	//check NaN exception
-	//gives a error massage (in log file) and set denstiy to zero
-	Vector3d p2(NAN);
-	EXPECT_DOUBLE_EQ(n.getHIDensity(p2),0);
-	EXPECT_DOUBLE_EQ(n.getH2Density(p2),0);
 }
 
 TEST(testFerriere, SimpleTest) {
@@ -240,9 +235,9 @@ TEST(testFerriere, SimpleTest) {
 	//testing density 
 	EXPECT_NEAR(n.getHIDensity(p),6237723,1); 	//uncertaincy 1e-6 cm^-3
 	EXPECT_NEAR(n.getH2Density(p),35484825,1); 
-	EXPECT_NEAR(n.getHIIDensity(p),5570335,1);	
-	EXPECT_NEAR(n.getDensity(p),47292883,1);
-	EXPECT_NEAR(n.getNucleonDensity(p),82777708,1);		//factor 2 in molecular hydrogen
+	EXPECT_NEAR(n.getHIIDensity(p),6243793,1);	
+	EXPECT_NEAR(n.getDensity(p),47966341,1);
+	EXPECT_NEAR(n.getNucleonDensity(p),83451166,2);		//factor 2 in molecular hydrogen; double uncertaincy
 	
 	Vector3d p2(-500*pc,-900*pc,35*pc);	//testing position in region of the DISK
 	EXPECT_NEAR(n.getHIIDensity(p2),48190,1);

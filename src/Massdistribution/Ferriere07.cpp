@@ -28,7 +28,7 @@ Vector3d Ferriere::DISKTrafo(const Vector3d &position) const {
 
 	// set galactocentric coordinate system with the Sun at (-8.5,0.,0.) instead of (8.5, 0, 0) to be consistand with JF12 implementation
 	double x = -position.x;
-	double y = - position y;
+	double y = - position.y;
 	double z = position.z;
 	
 	double alphaD = 13.5/180.*M_PI;	// rotation arround x-axis
@@ -138,10 +138,16 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 	
 	//warm interstellar matter
 	double nWIM = 0;		
-		
-	nWIM += exp(-(x*x+pow(y+10,2))/pow(145,2))*exp(-pow((z+20)/26.,2));
+	
+	double H = (x*x + pow(y+10.,2))/(145*145);
+	nWIM += exp(-H);
+	double n0 = nWIM;
+	nWIM *= exp(-pow(z+20.,2)/(26*26));
+	double n1 = nWIM;
 	nWIM += 0.009*exp(-pow((R/pc-3700)/(0.5*3700),2))*1/pow(cosh(z/140.),2);
+	double n2 = nWIM;
 	nWIM += 0.005*cos(M_PI*R/pc*0.5/17000)*1/pow(cosh(z/950.),2);
+	double n3 = nWIM;
 	
 	nWIM *= 8.0;	//rescaling
 	
@@ -154,10 +160,22 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 	double etta = y*cosA+z*sinA;		// coordinate transformation for VHIM along major axis
 	double chi = -y*sinA+z*cosA;
 	
-	nVHIM = 0.29*exp(-(x*x+etta*etta)/(162*162)+pow(chi/90,2)));
+	nVHIM = 0.29*exp(-((x*x+etta*etta)/(162.*162.)+chi*chi/(90*90)));
 	
 	n = nWIM + nVHIM;
-	
+	KISS_LOG_WARNING <<"\n"
+	<< "nWIM = " << nWIM <<"\n"
+	<< "nVHIM = " << nVHIM <<"\n"
+	<< "etta = " << etta <<"\n"
+	<< "chi = " << chi <<"\n"
+	//<< "H = " << H <<"\n"
+	//<< "n0 = " << n0 <<"\n"
+	//<< "n1 = " << n1 <<"\n"
+	<< "n2 = " << n2 <<"\n"
+	<< "n3 = " << n3 <<"\n"
+	<< "x = " << x <<"\n"
+	<< "y = " << y <<"\n"
+	<< "z = " << z <<"\n";
 	}
 	else {		// outer region
 		
