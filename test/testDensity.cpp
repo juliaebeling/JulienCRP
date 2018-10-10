@@ -307,7 +307,7 @@ TEST(testPohl,SimpleTest) {
 	EXPECT_DOUBLE_EQ(n.getH2Density(pz),0);
 	
 	//check position in Grid
-	Vector3d p(1*kpc,-1*kpc,0.25*kpc);
+	Vector3d p(-1*kpc,1*kpc,0.25*kpc);
 	EXPECT_NEAR(n.getHIDensity(p),6745,1);	// uncertaincy of 1e-6 cm^-3
 	EXPECT_NEAR(n.getH2Density(p),23500,1);
 	EXPECT_NEAR(n.getDensity(p),30245,1);

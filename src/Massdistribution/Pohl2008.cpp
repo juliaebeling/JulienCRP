@@ -64,7 +64,13 @@ void Pohl08::loadGridH2() {
 double Pohl08::getH2Density(const Vector3d &position) const {
 	
 	double n = 0; //density in ccm
+	
 	Vector3d pos = position;
+	
+	// set galactocentric coordinate system with the Sun at (-8.5,0.,0.) instead of (8.5, 0, 0) to be consistand with JF12 implementation
+	pos.x = -position.x;
+	pos.y = -position.y;
+	
 	
 	if(fabs(pos.x)>15*kpc)	//boundary of Grid not repeat
 	{
@@ -89,6 +95,10 @@ double Pohl08::getHIDensity(const Vector3d &position) const {
 	
 	double n = 0;	// density in ccm
 	Vector3d pos = position;
+	
+	// set galactocentric coordinate system with the Sun at (-8.5,0.,0.) instead of (8.5, 0, 0) to be consistand with JF12 implementation
+	pos.x = -position.x;
+	pos.y = -position.y;
 	
 	if(fabs(pos.x)>20*kpc)	//boundary of Grid not repeat 
 	{
