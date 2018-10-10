@@ -163,19 +163,7 @@ double Ferriere::getHIIDensity(const Vector3d &position) const {
 	nVHIM = 0.29*exp(-((x*x+etta*etta)/(162.*162.)+chi*chi/(90*90)));
 	
 	n = nWIM + nVHIM;
-	KISS_LOG_WARNING <<"\n"
-	<< "nWIM = " << nWIM <<"\n"
-	<< "nVHIM = " << nVHIM <<"\n"
-	<< "etta = " << etta <<"\n"
-	<< "chi = " << chi <<"\n"
-	//<< "H = " << H <<"\n"
-	//<< "n0 = " << n0 <<"\n"
-	//<< "n1 = " << n1 <<"\n"
-	<< "n2 = " << n2 <<"\n"
-	<< "n3 = " << n3 <<"\n"
-	<< "x = " << x <<"\n"
-	<< "y = " << y <<"\n"
-	<< "z = " << z <<"\n";
+
 	}
 	else {		// outer region
 		
