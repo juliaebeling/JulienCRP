@@ -372,7 +372,7 @@ add_library(crpropa SHARED
 	src/magneticField/MagneticFieldGrid.cpp
 	src/Massdistribution/Nakanishi.cpp
 	src/Massdistribution/Massdistribution.cpp
-	src/Massdistribution/Ferriere07.cpp
+	src/Massdistribution/Ferriere.cpp
 	src/Massdistribution/Cordes.cpp
 	src/Massdistribution/Pohl2008.cpp
 	src/Massdistribution/ConstantDensity.cpp

@@ -1,4 +1,4 @@
-#include "crpropa/Massdistribution/Ferriere07.h"
+#include "crpropa/Massdistribution/Ferriere.h"
 
 namespace crpropa {
 

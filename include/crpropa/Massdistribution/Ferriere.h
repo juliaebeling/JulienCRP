@@ -1,5 +1,5 @@
-#ifndef CRPROPA_FERRIERE07_H
-#define CRPROPA_FERRIERE07_H
+#ifndef CRPROPA_FERRIERE_H
+#define CRPROPA_FERRIERE_H
 
 #include "crpropa/Massdistribution/Density.h"
 #include "crpropa/Vector3.h"
@@ -56,6 +56,6 @@ public:
 
 }//namespace crpropa
 
-#endif //CRPROPA_FERRIERE07_H
+#endif //CRPROPA_FERRIERE_H
 
 
