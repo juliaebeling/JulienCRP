@@ -374,7 +374,7 @@ add_library(crpropa SHARED
 	src/Massdistribution/Massdistribution.cpp
 	src/Massdistribution/Ferriere.cpp
 	src/Massdistribution/Cordes.cpp
-	src/Massdistribution/Pohl2008.cpp
+	src/Massdistribution/Pohl.cpp
 	src/Massdistribution/ConstantDensity.cpp
 	src/magneticField/PT11Field.cpp
 	src/magneticField/ArchimedeanSpiralField.cpp

@@ -1,5 +1,5 @@
-#ifndef CRPROPA_POHL2008_H
-#define CRPROPA_POHL2008_H
+#ifndef CRPROPA_POHL_H
+#define CRPROPA_POHL_H
 
 #include "crpropa/Units.h"
 #include "crpropa/Vector3.h"
@@ -15,12 +15,12 @@
 namespace crpropa {
 
 /**
-	@class Pohl08 
+	@class Pohl
 	@brief Grid for H2 density based on arxiv:0712.4264 Fits-file avalibal at http://www.app.physik.uni-potsdam.de/gas.html 
 	Grid for HI density based on private communication with Martin Pohl.
 */
 
-class Pohl08: public Density {
+class Pohl: public Density {
 	ScalarGrid H2density = ScalarGrid(Vector3d(-15*kpc,-15*kpc,-500*pc),300,300,10,100*pc);
 	ScalarGrid HIdensity = ScalarGrid(Vector3d(-20*kpc,-20*kpc,-1500*pc),400,400,30,100*pc);	
 
@@ -31,7 +31,7 @@ class Pohl08: public Density {
 
 public:
 
-	Pohl08();
+	Pohl();
 	void loadGridHI();
 	void loadGridH2();
 	
@@ -55,4 +55,4 @@ public:
 
 } //namespace crpropa
 
-#endif //CRPROPA_POHL2008_H
+#endif //CRPROPA_POHL_H

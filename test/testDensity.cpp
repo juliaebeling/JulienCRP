@@ -2,7 +2,7 @@
 #include "crpropa/Massdistribution/Cordes.h"
 #include "crpropa/Massdistribution/Ferriere.h"
 #include "crpropa/Massdistribution/Nakanishi.h"
-#include "crpropa/Massdistribution/Pohl2008.h"
+#include "crpropa/Massdistribution/Pohl.h"
 #include "crpropa/Massdistribution/ConstantDensity.h"
 #include "crpropa/Units.h"
 
@@ -286,7 +286,7 @@ TEST(testFerriere, SimpleTest) {
 
 TEST(testPohl,SimpleTest) {
 	
-	Pohl08 n;
+	Pohl n;
 
 	//check type information
 	EXPECT_TRUE(n.getisforHI());

@@ -1,15 +1,15 @@
-#include "crpropa/Massdistribution/Pohl2008.h"
+#include "crpropa/Massdistribution/Pohl.h"
 
 #include <fstream>
 #include <sstream>
 
 namespace crpropa {
-Pohl08::Pohl08() {
+Pohl::Pohl() {
 	loadGridHI();
 	loadGridH2();
 }
 
-void Pohl08::loadGridHI() {
+void Pohl::loadGridHI() {
 	std::ifstream fin("/rest/CRPropa3/share/crpropa/Pohl_HI.txt");
 	if(!fin) {
 		std::stringstream ss;
@@ -35,7 +35,7 @@ void Pohl08::loadGridHI() {
 	fin.close();
 }
 
-void Pohl08::loadGridH2() {
+void Pohl::loadGridH2() {
 	std::ifstream fin("/rest/CRPropa3/share/crpropa/Pohl_H2.txt");
 	if(!fin) {
 		std::stringstream ss;
@@ -61,7 +61,7 @@ void Pohl08::loadGridH2() {
 	fin.close();
 }
 
-double Pohl08::getH2Density(const Vector3d &position) const {
+double Pohl::getH2Density(const Vector3d &position) const {
 	
 	double n = 0; //density in ccm
 	
@@ -91,7 +91,7 @@ double Pohl08::getH2Density(const Vector3d &position) const {
 }
 
 
-double Pohl08::getHIDensity(const Vector3d &position) const {
+double Pohl::getHIDensity(const Vector3d &position) const {
 	
 	double n = 0;	// density in ccm
 	Vector3d pos = position;
@@ -119,12 +119,12 @@ double Pohl08::getHIDensity(const Vector3d &position) const {
 	return n/ccm;
 	
 }
-double Pohl08::getDensity(const Vector3d &position) const {
+double Pohl::getDensity(const Vector3d &position) const {
 	double n=0;
 	if(isforHI)
-		n+=Pohl08::getHIDensity(position);
+		n+=Pohl::getHIDensity(position);
 	if(isforH2)
-		n+=Pohl08::getH2Density(position);
+		n+=Pohl::getH2Density(position);
 		
 	//check if any density is activ and give warning if not
 	bool anyDensityActive = isforHI||isforH2;
@@ -140,12 +140,12 @@ double Pohl08::getDensity(const Vector3d &position) const {
 }
 
 
-double Pohl08::getNucleonDensity(const Vector3d &position) const {
+double Pohl::getNucleonDensity(const Vector3d &position) const {
 	double n=0;
 	if(isforHI)
-		n+= Pohl08::getHIDensity(position);
+		n+= Pohl::getHIDensity(position);
 	if(isforH2)
-		n+= 2*Pohl08::getH2Density(position);
+		n+= 2*Pohl::getH2Density(position);
 		
 	//check if any density is activ and give warning if not
 	bool anyDensityActive = isforHI||isforH2;
@@ -161,27 +161,27 @@ double Pohl08::getNucleonDensity(const Vector3d &position) const {
 }
 
 
-bool Pohl08::getisforHI() {
+bool Pohl::getisforHI() {
 	return isforHI;
 }
 
-bool Pohl08::getisforHII() {
+bool Pohl::getisforHII() {
 	return isforHII;
 }
 
-bool Pohl08::getisforH2() {
+bool Pohl::getisforH2() {
 	return isforH2;
 }
 
-void Pohl08::setisforHI(bool HI) {
+void Pohl::setisforHI(bool HI) {
 	isforHI=HI;
 }
 
-void Pohl08::setisforH2(bool H2) {
+void Pohl::setisforH2(bool H2) {
 	isforH2=H2;
 }
 
-std::string Pohl08::getDescription() {
+std::string Pohl::getDescription() {
 	
 	std::stringstream s;
 	s << "Density modell Pohl 2008: ";

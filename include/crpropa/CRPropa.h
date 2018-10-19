@@ -14,7 +14,7 @@
 #include "crpropa/Massdistribution/Massdistribution.h"
 #include "crpropa/Massdistribution/Nakanishi.h"
 #include "crpropa/Massdistribution/Ferriere.h"
-#include "crpropa/Massdistribution/Pohl2008.h"
+#include "crpropa/Massdistribution/Pohl.h"
 #include "crpropa/Massdistribution/ConstantDensity.h"
 #include "crpropa/Module.h"
 #include "crpropa/ModuleList.h"
