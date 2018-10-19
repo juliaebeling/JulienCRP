@@ -1,7 +1,9 @@
 #include "crpropa/Massdistribution/Pohl.h"
+#include "crpropa/Module.h"
+
+
 
 #include <fstream>
-#include <sstream>
 
 namespace crpropa {
 Pohl::Pohl() {
@@ -10,7 +12,7 @@ Pohl::Pohl() {
 }
 
 void Pohl::loadGridHI() {
-	std::ifstream fin("/rest/CRPropa3/share/crpropa/Pohl_HI.txt");
+	std::ifstream fin(getDataPath("Pohl_HI.txt"));
 	if(!fin) {
 		std::stringstream ss;
 		ss << "load Pohl Grid: Pohl_HI.txt not found";
@@ -36,7 +38,7 @@ void Pohl::loadGridHI() {
 }
 
 void Pohl::loadGridH2() {
-	std::ifstream fin("/rest/CRPropa3/share/crpropa/Pohl_H2.txt");
+	std::ifstream fin(getDataPath("Pohl_H2.txt"));
 	if(!fin) {
 		std::stringstream ss;
 		ss << "load Pohl Grid: Pohl_H2.txt not found";
