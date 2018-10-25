@@ -399,6 +399,7 @@
 %include "crpropa/module/DiffusionSDE.h"
 %include "crpropa/module/TextOutput.h"
 
+%include "crpropa/module/HadronicInteraction.h"
 %include "crpropa/module/HDF5Output.h"
 %include "crpropa/module/OutputShell.h"
 %include "crpropa/module/EMCascade.h"
@@ -540,6 +541,7 @@ class ParticleCollectorIterator {
 
 %include "crpropa/module/ParticleCollector.h"
 
+%include "crpropa/Massdistribution/CMZDensity.h"
 %include "crpropa/Massdistribution/Density.h"
 %include "crpropa/Massdistribution/Nakanishi.h"
 %include "crpropa/Massdistribution/Cordes.h"

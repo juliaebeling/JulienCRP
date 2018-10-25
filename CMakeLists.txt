@@ -352,6 +352,7 @@ add_library(crpropa SHARED
 	src/module/EMTripletPairProduction.cpp
 	src/module/ElasticScattering.cpp
 	src/module/ElectronPairProduction.cpp
+    src/module/HadronicInteraction.cpp
 	src/module/HDF5Output.cpp
 	src/module/NuclearDecay.cpp
 	src/module/Observer.cpp
@@ -377,6 +378,7 @@ add_library(crpropa SHARED
 	src/magneticField/PT11Field.cpp
 	src/magneticField/ArchimedeanSpiralField.cpp
 	src/advectionField/AdvectionField.cpp
+    src/Massdistribution/CMZDensity.cpp
 	src/Massdistribution/Nakanishi.cpp
 	src/Massdistribution/Massdistribution.cpp
 	src/Massdistribution/Ferriere.cpp

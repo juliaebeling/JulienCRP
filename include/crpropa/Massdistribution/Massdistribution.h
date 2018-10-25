@@ -63,7 +63,7 @@ public:
 
 class DensityList: public Density {
 
-std::vector<ref_ptr<Density>> DensityList ;
+std::vector<ref_ptr<Density> > DensityList ;
 
 public:
 	void addDensity(ref_ptr<Density> density);
