@@ -220,6 +220,41 @@ public:
   DetectionState checkDetection(Candidate *candidate) const;
   std::string getDescription() const;
 };
+class ObserverTimeEvolution1: public ObserverFeature {
+        private:
+        std::vector<double> detList1;
+        public:
+        ObserverTimeEvolution1();
+        ObserverTimeEvolution1(double min, double dist, double numb);
+        void addTime(const double &position);
+        const std::vector<double>& getTimes() const;
+        DetectionState checkDetection(Candidate *candidate) const;
+        std::string getDescription() const;
+    };
+class ObserverTimeEvolution2: public ObserverFeature {
+private:
+  std::vector<double> detList2;
+public:
+  ObserverTimeEvolution2();
+  ObserverTimeEvolution2(double min, double dist, double numb);
+  void addTime(const double &position);
+  
+  const std::vector<double>& getTimes() const;
+  DetectionState checkDetection(Candidate *candidate) const;
+  std::string getDescription() const;
+};
+class ObserverTimeEvolution3: public ObserverFeature {
+private:
+  std::vector<double> detList3;
+public:
+  ObserverTimeEvolution3();
+  ObserverTimeEvolution3(double min, double dist, double numb);
+  void addTime(const double &position);
+  
+  const std::vector<double>& getTimes() const;
+  DetectionState checkDetection(Candidate *candidate) const;
+  std::string getDescription() const;
+};
 /** @} */
 
 }

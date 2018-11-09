@@ -376,6 +376,222 @@ std::string ObserverTimeEvolution::getDescription() const {
 	  s << "  - " << detList[i] / kpc;
 	return s.str();
 }
+    
+ObserverTimeEvolution1::ObserverTimeEvolution1() {}
+
+ObserverTimeEvolution1::ObserverTimeEvolution1(double min, double dist, double numb) {
+  for (size_t i = 0; i < numb; i++) {
+    addTime(min + i * dist);
+  }
+}
+
+
+DetectionState ObserverTimeEvolution1::checkDetection(Candidate *c) const {
+
+	if (detList1.size()) {
+		bool detected = false;
+		double length = c->getTrajectoryLength();
+		size_t index;
+		const std::string DI1 = "DetectionIndex1";
+		std::string value;
+
+		// Load the last detection index
+		if (c->hasProperty(DI1)) {
+			index = c->getProperty(DI1).asUInt64();
+		}
+		else {
+			index = 0;
+		}
+
+		// Break if the particle has been detected once for all detList entries.
+		if (index > detList1.size()) {
+			return NOTHING;
+		}
+
+		// Calculate the distance to next detection
+		double distance = length - detList1[index];
+
+		// Limit next Step and detect candidate
+		// Increase the index by one in case of detection
+		if (distance < 0.) {
+			c->limitNextStep(-distance);
+			return NOTHING;
+		}
+		else {
+
+			if (index < detList1.size()-1) {
+				c->limitNextStep(detList1[index+1]-length);
+			}
+			c->setProperty(DI1, Variant::fromUInt64(index+1));
+
+			detected=true;
+			return DETECTED;
+		}
+
+	}
+	return NOTHING;
+
+}
+
+void ObserverTimeEvolution1::addTime(const double& t) {
+	detList1.push_back(t);
+}
+
+const std::vector<double>& ObserverTimeEvolution1::getTimes() const {
+	return detList1;
+}
+
+std::string ObserverTimeEvolution1::getDescription() const {
+	std::stringstream s;
+	s << "List of Detection lengths in kpc";
+	for (size_t i = 0; i < detList1.size(); i++)
+	  s << "  - " << detList1[i] / kpc;
+	return s.str();
+}
+
+ObserverTimeEvolution2::ObserverTimeEvolution2() {}
+
+ObserverTimeEvolution2::ObserverTimeEvolution2(double min, double dist, double numb) {
+  for (size_t i = 0; i < numb; i++) {
+    addTime(min + i * dist);
+  }
+}
+
+
+DetectionState ObserverTimeEvolution2::checkDetection(Candidate *c) const {
+
+	if (detList2.size()) {
+		bool detected = false;
+		double length = c->getTrajectoryLength();
+		size_t index;
+		const std::string DI2 = "DetectionIndex2";
+		std::string value;
+
+		// Load the last detection index
+		if (c->hasProperty(DI2)) {
+			index = c->getProperty(DI2).asUInt64();
+		}
+		else {
+			index = 0;
+		}
+
+		// Break if the particle has been detected once for all detList entries.
+		if (index > detList2.size()) {
+			return NOTHING;
+		}
+
+		// Calculate the distance to next detection
+		double distance = length - detList2[index];
+
+		// Limit next Step and detect candidate
+		// Increase the index by one in case of detection
+		if (distance < 0.) {
+			c->limitNextStep(-distance);
+			return NOTHING;
+		}
+		else {
+
+			if (index < detList2.size()-1) {
+				c->limitNextStep(detList2[index+1]-length);
+			}
+			c->setProperty(DI2, Variant::fromUInt64(index+1));
+
+			detected=true;
+			return DETECTED;
+		}
+
+	}
+	return NOTHING;
+
+}
+
+void ObserverTimeEvolution2::addTime(const double& t) {
+	detList2.push_back(t);
+}
+
+const std::vector<double>& ObserverTimeEvolution2::getTimes() const {
+	return detList2;
+}
+
+std::string ObserverTimeEvolution2::getDescription() const {
+	std::stringstream s;
+	s << "List of Detection lengths in kpc";
+	for (size_t i = 0; i < detList2.size(); i++)
+	  s << "  - " << detList2[i] / kpc;
+	return s.str();
+}
+ObserverTimeEvolution3::ObserverTimeEvolution3() {}
+
+ObserverTimeEvolution3::ObserverTimeEvolution3(double min, double dist, double numb) {
+  for (size_t i = 0; i < numb; i++) {
+    addTime(min + i * dist);
+  }
+}
+
+
+DetectionState ObserverTimeEvolution3::checkDetection(Candidate *c) const {
+
+	if (detList3.size()) {
+		bool detected = false;
+		double length = c->getTrajectoryLength();
+		size_t index;
+		const std::string DI3 = "DetectionIndex3";
+		std::string value;
+
+		// Load the last detection index
+		if (c->hasProperty(DI3)) {
+			index = c->getProperty(DI3).asUInt64();
+		}
+		else {
+			index = 0;
+		}
+
+		// Break if the particle has been detected once for all detList entries.
+		if (index > detList3.size()) {
+			return NOTHING;
+		}
+
+		// Calculate the distance to next detection
+		double distance = length - detList3[index];
+
+		// Limit next Step and detect candidate
+		// Increase the index by one in case of detection
+		if (distance < 0.) {
+			c->limitNextStep(-distance);
+			return NOTHING;
+		}
+		else {
+
+			if (index < detList3.size()-1) {
+				c->limitNextStep(detList3[index+1]-length);
+			}
+			c->setProperty(DI3, Variant::fromUInt64(index+1));
+
+			detected=true;
+			return DETECTED;
+		}
+
+	}
+	return NOTHING;
+
+}
+
+void ObserverTimeEvolution3::addTime(const double& t) {
+	detList3.push_back(t);
+}
+
+const std::vector<double>& ObserverTimeEvolution3::getTimes() const {
+	return detList3;
+}
+
+std::string ObserverTimeEvolution3::getDescription() const {
+	std::stringstream s;
+	s << "List of Detection lengths in kpc";
+	for (size_t i = 0; i < detList3.size(); i++)
+	  s << "  - " << detList3[i] / kpc;
+	return s.str();
+}
+
 
 // ObserverSurface--------------------------------------------------------------
 ObserverSurface::ObserverSurface(Surface* _surface) : surface(_surface) { };

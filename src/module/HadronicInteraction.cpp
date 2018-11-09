@@ -279,16 +279,16 @@ void HadronicInteraction::setHaveNeutrinos(bool b) {
             
    //Gammas NG
         double FG=number_gamma(energy);
-        double NG=std::round(FG);
+        double NG=round(FG);
         
         //First myon neutrino Nmy1
         double Fmy1=number_my1(energy);
-        double Nmy1=std::round(Fmy1);
+        double Nmy1=round(Fmy1);
         
         
         //Electron NE
         double FE=number_e(energy);
-        double NE=std::round(FE);
+        double NE=round(FE);
         
         //Electron Neutrino NEN
         double NEN=NE;
